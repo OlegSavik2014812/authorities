@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @Entity
 @Table(name = "user")
-public class User implements PersistenceEntity<Long>{
+public class User implements PersistenceEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

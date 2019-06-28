@@ -35,6 +35,9 @@ public class UserConverter implements EntityConverter<User, UserDTO> {
 
     @Override
     public User toPersistence(UserDTO entity) {
+        if (entity == null) {
+            return null;
+        }
         User user = new User();
         Optional.ofNullable(entity.getId())
                 .ifPresent(user::setId);

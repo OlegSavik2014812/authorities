@@ -28,5 +28,5 @@ public class UserGroup implements PersistenceEntity<Long> {
     @JoinTable(name = "grp_auth",
             joinColumns = @JoinColumn(name = "group_id"),
             inverseJoinColumns = @JoinColumn(name = "authority_id"))
-    private Set<Authority> authorities;
+    private List<Authority> authorities;
 }

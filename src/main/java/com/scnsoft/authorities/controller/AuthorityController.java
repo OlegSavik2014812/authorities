@@ -4,6 +4,8 @@ import com.scnsoft.authorities.dto.AuthorityDTO;
 import com.scnsoft.authorities.service.AuthService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("authorities")
 public class AuthorityController {
@@ -11,6 +13,11 @@ public class AuthorityController {
 
     public AuthorityController(AuthService authService) {
         this.authService = authService;
+    }
+
+    @GetMapping("get")
+    public List<AuthorityDTO> getAuthorities() {
+        return authService.findAll();
     }
 
     @PostMapping("postAuthority")
