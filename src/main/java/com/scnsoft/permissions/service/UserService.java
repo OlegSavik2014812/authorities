@@ -1,15 +1,13 @@
 package com.scnsoft.permissions.service;
 
-import com.scnsoft.permissions.converter.PermissionConverter;
 import com.scnsoft.permissions.converter.UserConverter;
-import com.scnsoft.permissions.dto.PermissionDTO;
 import com.scnsoft.permissions.dto.UserDTO;
 import com.scnsoft.permissions.persistence.entity.AdditionalPermission;
-import com.scnsoft.permissions.persistence.entity.Permission;
 import com.scnsoft.permissions.persistence.entity.CompositePermissionId;
+import com.scnsoft.permissions.persistence.entity.Permission;
 import com.scnsoft.permissions.persistence.entity.User;
+import com.scnsoft.permissions.persistence.repository.GroupRepository;
 import com.scnsoft.permissions.persistence.repository.PermissionRepository;
-import com.scnsoft.permissions.persistence.repository.UserGroupRepository;
 import com.scnsoft.permissions.persistence.repository.UserRepository;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Service;
@@ -21,20 +19,18 @@ import java.util.stream.Collectors;
 @Service
 public class UserService extends BaseService<User, UserDTO, Long> {
     private final UserRepository userRepository;
-    private final UserGroupRepository userGroupRepository;
+    private final GroupRepository groupRepository;
     private final UserConverter converter;
-    private final PermissionConverter permissionConverter;
 
     private final PermissionRepository permissionRepository;
 
     public UserService(UserRepository userRepository,
-                       UserGroupRepository userGroupRepository,
-                       UserConverter converter, PermissionConverter permissionConverter, PermissionRepository permissionRepository) {
+                       GroupRepository groupRepository,
+                       UserConverter converter, PermissionRepository permissionRepository) {
         super(userRepository, converter);
         this.userRepository = userRepository;
-        this.userGroupRepository = userGroupRepository;
+        this.groupRepository = groupRepository;
         this.converter = converter;
-        this.permissionConverter = permissionConverter;
         this.permissionRepository = permissionRepository;
     }
 
@@ -64,29 +60,18 @@ public class UserService extends BaseService<User, UserDTO, Long> {
     public void assignGroup(String login, String userGroupName) {
         userRepository.findUserByLogin(login)
                 .ifPresent(user1 -> {
-                    userGroupRepository.findUserGroupByName(userGroupName)
+                    groupRepository.findUserGroupByName(userGroupName)
                             .ifPresent(user1::setGroup);
                     userRepository.save(user1);
                 });
     }
 
-    public void assignAdditionalPermission(UserDTO userDTO, PermissionDTO permissionDTO, boolean isEnabled) {
-        userRepository.findById(userDTO.getId())
-                .filter(user -> permissionRepository.existsById(permissionDTO.getId()))
-                .map(user -> {
-                    CompositePermissionId compositePermissionId = new CompositePermissionId(user.getId(), permissionDTO.getId());
-                    Permission permission = permissionConverter.toPersistence(permissionDTO);
-                    AdditionalPermission additionalPermission = AdditionalPermission.builder()
-                            .id(compositePermissionId)
-                            .permission(permission)
-                            .user(user)
-                            .isEnabled(isEnabled)
-                            .build();
-
-                    user.getAdditionalPermissions()
-                            .add(additionalPermission);
-                    return user;
-                }).ifPresent(userRepository::save);
+    public void assignAdditionalPermission(String login, String permissionName, boolean isEnabled) {
+        User user = userRepository.findUserByLogin(login).orElseThrow(RuntimeException::new);
+        Permission permission = permissionRepository.findPermissionByName(permissionName).orElseThrow(RuntimeException::new);
+        AdditionalPermission additionalPermission = build(user, permission, isEnabled);
+        user.getAdditionalPermissions().add(additionalPermission);
+        userRepository.save(user);
     }
 
     @Override
@@ -96,5 +81,17 @@ public class UserService extends BaseService<User, UserDTO, Long> {
 
     private String encrypt(String s) {
         return DigestUtils.md5Hex(s);
+    }
+
+    private AdditionalPermission build(User user, Permission permission, boolean isEnabled) {
+        CompositePermissionId compositePermissionId = new CompositePermissionId();
+        compositePermissionId.setUserId(user.getId());
+        compositePermissionId.setPermissionId(permission.getId());
+        AdditionalPermission additionalPermission = new AdditionalPermission();
+        additionalPermission.setId(compositePermissionId);
+        additionalPermission.setUser(user);
+        additionalPermission.setPermission(permission);
+        additionalPermission.setEnabled(isEnabled);
+        return additionalPermission;
     }
 }

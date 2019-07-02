@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "permission")
+@Table(name = "permission_")
 public class Permission implements PersistenceEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,9 +20,16 @@ public class Permission implements PersistenceEntity<Long> {
     @Size(max = 256)
     private String name;
 
-    @ManyToMany(mappedBy = "permissions", fetch = FetchType.LAZY)
-    private List<UserGroup> userGroups;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "group_permissions_",
+            joinColumns = @JoinColumn(name = "permission_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id")
+    )
+    private List<Group> groups;
 
-    @OneToMany(mappedBy = "permission", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "permission",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
     private List<AdditionalPermission> additionalPermissions;
 }

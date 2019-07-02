@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "user")
+@Table(name = "user_")
 public class User implements PersistenceEntity<Long> {
 
     @Id
@@ -26,10 +26,13 @@ public class User implements PersistenceEntity<Long> {
     @Size(max = 256)
     private String password;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id")
-    private UserGroup group;
+    private Group group;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
     private List<AdditionalPermission> additionalPermissions;
 }

@@ -11,8 +11,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "group")
-public class UserGroup implements PersistenceEntity<Long> {
+@Table(name = "group_")
+public class Group implements PersistenceEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,11 +20,13 @@ public class UserGroup implements PersistenceEntity<Long> {
     @Size(max = 256)
     private String name;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "group",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY)
     private List<User> users;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "group_permission",
+    @JoinTable(name = "group_permissions_",
             joinColumns = @JoinColumn(name = "group_id"),
             inverseJoinColumns = @JoinColumn(name = "permission_id"))
     private List<Permission> permissions;

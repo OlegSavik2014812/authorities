@@ -12,4 +12,6 @@ public interface PermissionRepository extends CrudRepository<Permission, Long> {
     Optional<Permission> findPermissionByName(@Param("name") String name);
 
     void deletePermissionByName(@Param("name") String name);
+
+    boolean existsByName(@Param("name") String name);
 }

@@ -1,7 +1,7 @@
 package com.scnsoft.permissions.controller;
 
 import com.scnsoft.permissions.dto.UserGroupDTO;
-import com.scnsoft.permissions.service.UserGroupService;
+import com.scnsoft.permissions.service.GroupService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,30 +10,30 @@ import java.util.List;
 @RestController(value = "user_permissions")
 @RequestMapping("groups")
 public class GroupController {
-    private final UserGroupService userGroupService;
+    private final GroupService groupService;
 
-    public GroupController(UserGroupService userGroupService) {
-        this.userGroupService = userGroupService;
+    public GroupController(GroupService groupService) {
+        this.groupService = groupService;
     }
 
     @PreAuthorize("hasAuthority('edit-preorder')")
     @GetMapping
     public List<UserGroupDTO> getGroups() {
-        return userGroupService.findAll();
+        return groupService.findAll();
     }
 
     @GetMapping("{id}")
     public UserGroupDTO findById(@PathVariable Long id) {
-        return userGroupService.findById(id).orElseThrow(RuntimeException::new);
+        return groupService.findById(id).orElseThrow(RuntimeException::new);
     }
 
     @GetMapping(path = "assignPermission", params = {"userGroupName", "permissionName"})
     public UserGroupDTO assignPermission(@RequestParam String userGroupName, @RequestParam String permissionName) {
-        return userGroupService.assignPermission(userGroupName, permissionName).orElseThrow(RuntimeException::new);
+        return groupService.assignPermission(userGroupName, permissionName).orElseThrow(RuntimeException::new);
     }
 
     @PostMapping()
     public UserGroupDTO postGroup(@RequestBody UserGroupDTO userGroupDTO) {
-        return userGroupService.saveEntity(userGroupDTO).orElseThrow(RuntimeException::new);
+        return groupService.saveEntity(userGroupDTO).orElseThrow(RuntimeException::new);
     }
 }

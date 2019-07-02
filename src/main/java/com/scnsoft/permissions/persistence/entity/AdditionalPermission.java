@@ -13,7 +13,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "user_permission")
+@Table(name = "user_permissions_")
 public class AdditionalPermission implements PersistenceEntity<CompositePermissionId>, Serializable {
     @EmbeddedId
     private CompositePermissionId id;

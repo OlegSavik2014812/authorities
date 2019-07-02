@@ -34,4 +34,12 @@ public class UserController {
         userService.assignGroup(login, groupName);
         return userService.findByLogin(login).orElseThrow(RuntimeException::new);
     }
+
+    @GetMapping(path = "assignGroup", params = {"login", "groupName"})
+    public UserDTO assignPermission(@RequestParam String login,
+                                    @RequestParam String permissionName,
+                                    @RequestParam boolean isEnabled) {
+        userService.assignAdditionalPermission(login, permissionName, isEnabled);
+        return userService.findByLogin(login).orElseThrow(RuntimeException::new);
+    }
 }

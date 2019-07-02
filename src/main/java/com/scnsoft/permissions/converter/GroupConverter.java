@@ -3,7 +3,7 @@ package com.scnsoft.permissions.converter;
 import com.scnsoft.permissions.dto.UserGroupDTO;
 import com.scnsoft.permissions.persistence.entity.Permission;
 import com.scnsoft.permissions.persistence.entity.User;
-import com.scnsoft.permissions.persistence.entity.UserGroup;
+import com.scnsoft.permissions.persistence.entity.Group;
 import com.scnsoft.permissions.persistence.repository.PermissionRepository;
 import com.scnsoft.permissions.persistence.repository.UserRepository;
 import org.springframework.stereotype.Component;
@@ -16,17 +16,17 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Component
-public class UserGroupConverter implements EntityConverter<UserGroup, UserGroupDTO> {
+public class GroupConverter implements EntityConverter<Group, UserGroupDTO> {
     private final PermissionRepository permissionRepository;
     private final UserRepository userRepository;
 
-    public UserGroupConverter(PermissionRepository permissionRepository, UserRepository userRepository) {
+    public GroupConverter(PermissionRepository permissionRepository, UserRepository userRepository) {
         this.permissionRepository = permissionRepository;
         this.userRepository = userRepository;
     }
 
     @Override
-    public UserGroupDTO toDTO(UserGroup entity) {
+    public UserGroupDTO toDTO(Group entity) {
         if (entity == null) {
             return null;
         }
@@ -40,26 +40,26 @@ public class UserGroupConverter implements EntityConverter<UserGroup, UserGroupD
     }
 
     @Override
-    public UserGroup toPersistence(UserGroupDTO entity) {
+    public Group toPersistence(UserGroupDTO entity) {
         if (entity == null) {
             return null;
         }
-        UserGroup userGroup = new UserGroup();
+        Group group = new Group();
         Optional.ofNullable(entity.getId())
-                .ifPresent(userGroup::setId);
-        userGroup.setName(entity.getName());
+                .ifPresent(group::setId);
+        group.setName(entity.getName());
 
-        userGroup.setPermissions(getList(getList(
+        group.setPermissions(getList(getList(
                 entity.getPermissionsIds(),
                 permissionRepository::findById),
                 optional -> optional.orElse(null)));
 
-        userGroup.setUsers(getList(getList(
+        group.setUsers(getList(getList(
                 entity.getUserIds(),
                 userRepository::findById),
                 optional -> optional.orElse(null)));
 
-        return userGroup;
+        return group;
     }
 
     private static <T, K> List<T> getList(Iterable<K> source, Function<K, T> mapper) {
