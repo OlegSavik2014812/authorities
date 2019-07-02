@@ -16,13 +16,13 @@ SET NAMES utf8;
 /*!40111 SET @OLD_SQL_NOTES = @@SQL_NOTES, SQL_NOTES = 0 */;
 
 --
--- Table structure for table `authority`
+-- Table structure for table `permission`
 --
 
-DROP TABLE IF EXISTS `authority`;
+DROP TABLE IF EXISTS permission;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 SET character_set_client = utf8mb4;
-CREATE TABLE `authority`
+CREATE TABLE `permission`
 (
     `id`   int(11)      NOT NULL AUTO_INCREMENT,
     `name` varchar(256) NOT NULL,
@@ -34,15 +34,15 @@ CREATE TABLE `authority`
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `authority`
+-- Dumping data for table `permission`
 --
 
-LOCK TABLES `authority` WRITE;
-/*!40000 ALTER TABLE `authority`
+LOCK TABLES permission WRITE;
+/*!40000 ALTER TABLE permission
     DISABLE KEYS */;
-INSERT INTO `authority`
+INSERT INTO permission
 VALUES (1, 'DO_WHATEVER');
-/*!40000 ALTER TABLE `authority`
+/*!40000 ALTER TABLE permission
     ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -50,7 +50,7 @@ UNLOCK TABLES;
 -- Table structure for table `grp_auth`
 --
 
-DROP TABLE IF EXISTS `grp_auth`;
+DROP TABLE IF EXISTS group_permission;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 SET character_set_client = utf8mb4;
 CREATE TABLE `grp_auth`
@@ -61,8 +61,8 @@ CREATE TABLE `grp_auth`
     KEY `fk_authority_idx` (`authority_id`),
     KEY `fk_group_grpauth_idx` (`group_id`),
     KEY `fk_authority_grpauth_idx` (`authority_id`),
-    CONSTRAINT `fk_authority_grpauth` FOREIGN KEY (`authority_id`) REFERENCES `authority` (`id`),
-    CONSTRAINT `fk_group_grpauth` FOREIGN KEY (`group_id`) REFERENCES `user_group` (`id`)
+    CONSTRAINT `fk_authority_grpauth` FOREIGN KEY (`authority_id`) REFERENCES permission (`id`),
+    CONSTRAINT `fk_group_grpauth` FOREIGN KEY (`group_id`) REFERENCES `group` (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -71,12 +71,12 @@ CREATE TABLE `grp_auth`
 -- Dumping data for table `grp_auth`
 --
 
-LOCK TABLES `grp_auth` WRITE;
-/*!40000 ALTER TABLE `grp_auth`
+LOCK TABLES group_permission WRITE;
+/*!40000 ALTER TABLE group_permission
     DISABLE KEYS */;
-INSERT INTO `grp_auth`
+INSERT INTO group_permission
 VALUES (1, 1);
-/*!40000 ALTER TABLE `grp_auth`
+/*!40000 ALTER TABLE group_permission
     ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -96,7 +96,7 @@ CREATE TABLE `user`
     PRIMARY KEY (`id`),
     UNIQUE KEY `login_UNIQUE` (`login`),
     KEY `fk_group_user_idx` (`group_id`),
-    CONSTRAINT `fk_group_user` FOREIGN KEY (`group_id`) REFERENCES `user_group` (`id`)
+    CONSTRAINT `fk_group_user` FOREIGN KEY (`group_id`) REFERENCES `group` (`id`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 6
   DEFAULT CHARSET = utf8;
@@ -120,7 +120,7 @@ UNLOCK TABLES;
 -- Table structure for table `user_auth`
 --
 
-DROP TABLE IF EXISTS `user_auth`;
+DROP TABLE IF EXISTS user_permission;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 SET character_set_client = utf8mb4;
 CREATE TABLE `user_auth`
@@ -130,7 +130,7 @@ CREATE TABLE `user_auth`
     `enabled` tinyint(1) DEFAULT '0',
     PRIMARY KEY (`user_id`, `auth_id`),
     KEY `fk_auth_usrauth_idx` (`auth_id`),
-    CONSTRAINT `fk_auth_usrauth` FOREIGN KEY (`auth_id`) REFERENCES `authority` (`id`),
+    CONSTRAINT `fk_auth_usrauth` FOREIGN KEY (`auth_id`) REFERENCES permission (`id`),
     CONSTRAINT `fk_user_usrauth` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
@@ -140,10 +140,10 @@ CREATE TABLE `user_auth`
 -- Dumping data for table `user_auth`
 --
 
-LOCK TABLES `user_auth` WRITE;
-/*!40000 ALTER TABLE `user_auth`
+LOCK TABLES user_permission WRITE;
+/*!40000 ALTER TABLE user_permission
     DISABLE KEYS */;
-/*!40000 ALTER TABLE `user_auth`
+/*!40000 ALTER TABLE user_permission
     ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -151,7 +151,7 @@ UNLOCK TABLES;
 -- Table structure for table `user_group`
 --
 
-DROP TABLE IF EXISTS `user_group`;
+DROP TABLE IF EXISTS `group`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 SET character_set_client = utf8mb4;
 CREATE TABLE `user_group`
@@ -169,12 +169,12 @@ CREATE TABLE `user_group`
 -- Dumping data for table `user_group`
 --
 
-LOCK TABLES `user_group` WRITE;
-/*!40000 ALTER TABLE `user_group`
+LOCK TABLES `group` WRITE;
+/*!40000 ALTER TABLE `group`
     DISABLE KEYS */;
-INSERT INTO `user_group`
+INSERT INTO `group`
 VALUES (1, 'ADMIN');
-/*!40000 ALTER TABLE `user_group`
+/*!40000 ALTER TABLE `group`
     ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE = @OLD_TIME_ZONE */;
