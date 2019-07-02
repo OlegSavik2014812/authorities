@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class UserGroupDTO implements EntityDTO{
+public class GroupDTO implements EntityDTO{
     private Long id;
     private String name;
     private List<Long> userIds;

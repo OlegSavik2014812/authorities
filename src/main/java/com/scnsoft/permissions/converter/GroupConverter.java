@@ -1,6 +1,6 @@
 package com.scnsoft.permissions.converter;
 
-import com.scnsoft.permissions.dto.UserGroupDTO;
+import com.scnsoft.permissions.dto.GroupDTO;
 import com.scnsoft.permissions.persistence.entity.Permission;
 import com.scnsoft.permissions.persistence.entity.User;
 import com.scnsoft.permissions.persistence.entity.Group;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Component
-public class GroupConverter implements EntityConverter<Group, UserGroupDTO> {
+public class GroupConverter implements EntityConverter<Group, GroupDTO> {
     private final PermissionRepository permissionRepository;
     private final UserRepository userRepository;
 
@@ -26,21 +26,21 @@ public class GroupConverter implements EntityConverter<Group, UserGroupDTO> {
     }
 
     @Override
-    public UserGroupDTO toDTO(Group entity) {
+    public GroupDTO toDTO(Group entity) {
         if (entity == null) {
             return null;
         }
 
-        UserGroupDTO userGroupDTO = new UserGroupDTO();
-        userGroupDTO.setId(entity.getId());
-        userGroupDTO.setName(entity.getName());
-        userGroupDTO.setPermissionsIds(getList(entity.getPermissions(), Permission::getId));
-        userGroupDTO.setUserIds(getList(entity.getUsers(), User::getId));
-        return userGroupDTO;
+        GroupDTO groupDTO = new GroupDTO();
+        groupDTO.setId(entity.getId());
+        groupDTO.setName(entity.getName());
+        groupDTO.setPermissionsIds(getList(entity.getPermissions(), Permission::getId));
+        groupDTO.setUserIds(getList(entity.getUsers(), User::getId));
+        return groupDTO;
     }
 
     @Override
-    public Group toPersistence(UserGroupDTO entity) {
+    public Group toPersistence(GroupDTO entity) {
         if (entity == null) {
             return null;
         }

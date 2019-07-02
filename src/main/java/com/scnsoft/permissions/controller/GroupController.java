@@ -1,6 +1,6 @@
 package com.scnsoft.permissions.controller;
 
-import com.scnsoft.permissions.dto.UserGroupDTO;
+import com.scnsoft.permissions.dto.GroupDTO;
 import com.scnsoft.permissions.service.GroupService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -18,22 +18,22 @@ public class GroupController {
 
     @PreAuthorize("hasAuthority('edit-preorder')")
     @GetMapping
-    public List<UserGroupDTO> getGroups() {
+    public List<GroupDTO> getGroups() {
         return groupService.findAll();
     }
 
     @GetMapping("{id}")
-    public UserGroupDTO findById(@PathVariable Long id) {
+    public GroupDTO findById(@PathVariable Long id) {
         return groupService.findById(id).orElseThrow(RuntimeException::new);
     }
 
     @GetMapping(path = "assignPermission", params = {"userGroupName", "permissionName"})
-    public UserGroupDTO assignPermission(@RequestParam String userGroupName, @RequestParam String permissionName) {
+    public GroupDTO assignPermission(@RequestParam String userGroupName, @RequestParam String permissionName) {
         return groupService.assignPermission(userGroupName, permissionName).orElseThrow(RuntimeException::new);
     }
 
     @PostMapping()
-    public UserGroupDTO postGroup(@RequestBody UserGroupDTO userGroupDTO) {
-        return groupService.saveEntity(userGroupDTO).orElseThrow(RuntimeException::new);
+    public GroupDTO postGroup(@RequestBody GroupDTO groupDTO) {
+        return groupService.saveEntity(groupDTO).orElseThrow(RuntimeException::new);
     }
 }
