@@ -35,7 +35,7 @@ public class UserController {
         return userService.findByLogin(login).orElseThrow(RuntimeException::new);
     }
 
-    @GetMapping(path = "assignGroup", params = {"login", "groupName"})
+    @GetMapping(path = "assignPermission", params = {"login", "groupName"})
     public UserDTO assignPermission(@RequestParam String login,
                                     @RequestParam String permissionName,
                                     @RequestParam boolean isEnabled) {

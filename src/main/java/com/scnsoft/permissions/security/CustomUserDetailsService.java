@@ -12,7 +12,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import javax.transaction.Transactional;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,6 +34,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String username) {
         UserDTO userDTO = userService.findByLogin(username)
                 .orElseThrow(NullPointerException::new);
@@ -40,33 +45,34 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     private Collection<SimpleGrantedAuthority> getAvailableUserPermissions(UserDTO userDTO) {
+        Map<String, Boolean> additionalPermissions = userDTO.getAdditionalPermissions();
+
         Stream<Optional<Permission>> groupPermissions = groupService.findById(userDTO.getId())
                 .map(GroupDTO::getPermissionsIds)
                 .orElse(Collections.emptyList())
                 .stream()
                 .map(permissionRepository::findById);
 
-        Stream<Optional<Permission>> additionalPermission = userDTO.getAdditionalPermissions()
+        Stream<Optional<Permission>> additionalPermission = additionalPermissions
                 .keySet()
                 .stream()
                 .map(permissionRepository::findPermissionByName);
 
-        Stream.concat(groupPermissions, additionalPermission)
-                .map(opt -> opt.orElse(null))
-                .filter(Objects::nonNull)
+        return Stream.concat(groupPermissions, additionalPermission)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .map(Permission::getName)
-                .filter(permName -> {
-                    for (Map.Entry<String, Boolean> stringBooleanEntry : userDTO.getAdditionalPermissions().entrySet()) {
-                        if (permName.equals(stringBooleanEntry.getKey()) && !stringBooleanEntry.getValue()) {
-                            return false;
-                        }
-                    }
-                })
+                .filter(name -> isValidName(name, additionalPermissions))
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toSet());
+    }
 
-
-        Set<SimpleGrantedAuthority> permissionSet = new HashSet<>();
-        permissionSet.addAll(groupPermissions);
-        permissionSet.addAll(additionalPermissions);
-        return permissionSet;
+    private boolean isValidName(String permissionName, Map<String, Boolean> additionalPermissions) {
+        for (Map.Entry<String, Boolean> permissionEntry : additionalPermissions.entrySet()) {
+            if (permissionEntry.getKey().equals(permissionName) && !permissionEntry.getValue()) {
+                return false;
+            }
+        }
+        return true;
     }
 }
