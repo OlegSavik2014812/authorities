@@ -16,7 +16,6 @@ public class GroupController {
         this.groupService = groupService;
     }
 
-    @PreAuthorize("hasAuthority('edit-preorder')")
     @GetMapping
     public List<GroupDTO> getGroups() {
         return groupService.findAll();

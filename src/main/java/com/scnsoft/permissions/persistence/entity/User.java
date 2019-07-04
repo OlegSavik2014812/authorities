@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "user_")
+@Table(name = "users")
 public class User implements PersistenceEntity<Long> {
 
     @Id

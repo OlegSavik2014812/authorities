@@ -15,8 +15,10 @@ import java.io.Serializable;
 @EqualsAndHashCode
 @Embeddable
 public class CompositePermissionId implements Serializable {
+
     @Column(name = "user_id")
     private Long userId;
+
     @Column(name = "permission_id")
     private Long permissionId;
 }

@@ -1,62 +1,62 @@
-drop table if exists group_;
-drop table if exists group_permissions_;
-drop table if exists permission_;
-drop table if exists user_;
-drop table if exists user_permissions_;
+drop table if exists `groups`;
+drop table if exists group_permissions;
+drop table if exists permissions;
+drop table if exists users;
+drop table if exists user_permissions;
 
-create table group_
+create table `groups`
 (
     id   bigint       not null auto_increment,
     name varchar(255) not null,
     primary key (id)
-) engine = MyISAM;
+);
 
-create table group_permissions_
+create table group_permissions
 (
     permission_id bigint not null,
     group_id      bigint not null
-) engine = MyISAM;
+);
 
-create table permission_
+create table permissions
 (
     id   bigint       not null auto_increment,
     name varchar(255) not null,
     primary key (id)
-) engine = MyISAM;
+);
 
-create table user_
+create table users
 (
     id       bigint       not null auto_increment,
     login    varchar(255) not null,
     password varchar(255) not null,
     group_id bigint,
     primary key (id)
-) engine = MyISAM;
+);
 
-create table user_permissions_
+create table user_permissions
 (
     permission_id bigint not null,
     user_id       bigint not null,
     enabled       TINYINT default 0,
     primary key (permission_id, user_id)
-) engine = MyISAM;
+);
 
-alter table group_permissions_
+alter table group_permissions
     add constraint FK_group_permissions_group
-        foreign key (group_id) references group_ (id);
+        foreign key (group_id) references `groups` (id);
 
-alter table group_permissions_
+alter table group_permissions
     add constraint FK_group_permissions_permission
-        foreign key (permission_id) references permission_ (id);
+        foreign key (permission_id) references permissions (id);
 
-alter table user_
+alter table users
     add constraint FK_user_group
-        foreign key (group_id) references group_ (id);
+        foreign key (group_id) references `groups` (id);
 
-alter table user_permissions_
+alter table user_permissions
     add constraint FK_user_permissions_permission
-        foreign key (permission_id) references permission_ (id);
+        foreign key (permission_id) references permissions (id);
 
-alter table user_permissions_
+alter table user_permissions
     add constraint FK_user_permissions_user
-        foreign key (user_id) references user_ (id);
+        foreign key (user_id) references users (id);

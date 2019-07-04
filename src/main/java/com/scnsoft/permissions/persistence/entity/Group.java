@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "group_")
+@Table(name = "`groups`")
 public class Group implements PersistenceEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,7 @@ public class Group implements PersistenceEntity<Long> {
     private List<User> users;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "group_permissions_",
+    @JoinTable(name = "group_permissions",
             joinColumns = @JoinColumn(name = "group_id"),
             inverseJoinColumns = @JoinColumn(name = "permission_id"))
     private List<Permission> permissions;
