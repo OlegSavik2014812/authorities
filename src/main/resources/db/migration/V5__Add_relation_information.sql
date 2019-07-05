@@ -9,3 +9,10 @@ values (1, 1);
 
 insert into group_permissions (permission_id, group_id)
 values (2, 1);
+
+insert into group_permissions(permission_id,group_id)
+values (1,2);
+insert into group_permissions(permission_id,group_id)
+values (2,2);
+insert into group_permissions(permission_id,group_id)
+values (3,2);
