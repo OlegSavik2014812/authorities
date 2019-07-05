@@ -26,11 +26,12 @@ public class GroupController {
         return groupService.findById(id).orElseThrow(RuntimeException::new);
     }
 
+    @PreAuthorize("hasAnyAuthority('admin','moderator')")
     @GetMapping(path = "assignPermission", params = {"userGroupName", "permissionName"})
     public GroupDTO assignPermission(@RequestParam String userGroupName, @RequestParam String permissionName) {
         return groupService.assignPermission(userGroupName, permissionName).orElseThrow(RuntimeException::new);
     }
-
+    @PreAuthorize("hasAnyAuthority('admin','moderator')")
     @PostMapping()
     public GroupDTO postGroup(@RequestBody GroupDTO groupDTO) {
         return groupService.saveEntity(groupDTO).orElseThrow(RuntimeException::new);

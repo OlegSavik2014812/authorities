@@ -25,11 +25,17 @@ public class JwtUserFactory {
         this.permissionRepository = permissionRepository;
     }
 
-    public JwtUser create(UserDTO userDTO) {
-        return new JwtUser(userDTO.getId(), userDTO.getLogin(), userDTO.getPassword(), true, getAvailableUserPermissions(userDTO));
+    public JwtUser build(UserDTO userDTO) {
+        return JwtUser.builder()
+                .id(userDTO.getId())
+                .username(userDTO.getLogin())
+                .password(userDTO.getPassword())
+                .isEnabled(true)
+                .authorities(getAvailableUserAuthorities(userDTO))
+                .build();
     }
 
-    private Collection<SimpleGrantedAuthority> getAvailableUserPermissions(UserDTO userDTO) {
+    private Collection<SimpleGrantedAuthority> getAvailableUserAuthorities(UserDTO userDTO) {
         Map<String, Boolean> additionalPermissions = userDTO.getAdditionalPermissions();
 
         Iterable<Permission> groupPermissions = groupService.findById(userDTO.getGroupId())
@@ -44,12 +50,12 @@ public class JwtUserFactory {
 
         return StreamSupport.stream(availablePermissions.spliterator(), false)
                 .map(Permission::getName)
-                .filter(name -> isValidName(name, additionalPermissions))
+                .filter(permissionName -> isPermissionSupported(permissionName, additionalPermissions))
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toSet());
     }
 
-    private static boolean isValidName(String permissionName, Map<String, Boolean> additionalPermissions) {
+    private boolean isPermissionSupported(String permissionName, Map<String, Boolean> additionalPermissions) {
         for (Map.Entry<String, Boolean> permissionEntry : additionalPermissions.entrySet()) {
             if (permissionEntry.getKey().equals(permissionName)) {
                 return permissionEntry.getValue();
@@ -57,5 +63,4 @@ public class JwtUserFactory {
         }
         return true;
     }
-
 }

@@ -1,5 +1,6 @@
 package com.scnsoft.permissions.security.jwt;
 
+import lombok.Builder;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -7,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 
 @Data
+@Builder
 public class JwtUser implements UserDetails {
 
     private Long id;
@@ -15,7 +17,11 @@ public class JwtUser implements UserDetails {
     private boolean isEnabled;
     private Collection<? extends GrantedAuthority> authorities;
 
-    public JwtUser(Long id, String username, String password, boolean isEnabled, Collection<? extends GrantedAuthority> authorities) {
+    public JwtUser(Long id,
+                   String username,
+                   String password,
+                   boolean isEnabled,
+                   Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;
         this.password = password;

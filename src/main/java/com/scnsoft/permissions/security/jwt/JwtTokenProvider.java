@@ -1,6 +1,8 @@
 package com.scnsoft.permissions.security.jwt;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,21 +14,17 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Base64;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Component
 public class JwtTokenProvider {
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final String TOKEN_ID = "Token_";
+    private static final String AUTHORITIES = "authorities";
+    private static final String EMPTY = "";
 
     @Value("${jwt.token.secret}")
     private String secret;
-
-    @Value("${jwt.token.expired}")
-    private long validityInMilliseconds;
-
 
     private final JwtUserDetailsService userDetailsService;
 
@@ -45,47 +43,32 @@ public class JwtTokenProvider {
     }
 
     public String createToken(UserDetails userDetails) {
-
         Claims claims = Jwts.claims().setSubject(userDetails.getUsername());
-        claims.put("authorities", getRoleNames(userDetails.getAuthorities()));
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + validityInMilliseconds);
-
-        return Jwts.builder()//
-                .setClaims(claims)//
-                .setIssuedAt(now)//
-                .setExpiration(validity)//
-                .signWith(SignatureAlgorithm.HS256, secret)//
+        claims.put(AUTHORITIES, getRoleNames(userDetails.getAuthorities()));
+        return Jwts.builder()
+                .setClaims(claims)
+                .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
     }
 
     public Authentication getAuthentication(String token) {
-        UserDetails userDetails = this.userDetailsService.loadUserByUsername(getUsername(token));
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        String username = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
+        UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+        return new UsernamePasswordAuthenticationToken(userDetails, EMPTY, userDetails.getAuthorities());
     }
 
-    public String getUsername(String token) {
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
-    }
-
-    public String resolveToken(HttpServletRequest req) {
-        String bearerToken = req.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith("Bearer_")) {
-            return bearerToken.substring(7, bearerToken.length());
-        }
-        return null;
-    }
-
-    public boolean validateToken(String token) {
-        try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
-            return !claims.getBody().getExpiration().before(new Date());
-        } catch (JwtException | IllegalArgumentException e) {
-            throw new JwtAuthenticationException("JWT token is expired or invalid");
-        }
+    public String resolveToken(HttpServletRequest servletRequest) {
+        return Optional.ofNullable(servletRequest.getHeader(AUTHORIZATION_HEADER))
+                .filter(token -> token.startsWith(TOKEN_ID))
+                .map(token -> token.substring(7))
+                .orElse(EMPTY);
     }
 
     private List<String> getRoleNames(Collection<? extends GrantedAuthority> authorities) {
-        return authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
+        List<String> list = new ArrayList<>();
+        for (GrantedAuthority authority : authorities) {
+            list.add(authority.getAuthority());
+        }
+        return list;
     }
 }

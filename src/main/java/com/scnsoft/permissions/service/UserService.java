@@ -9,7 +9,8 @@ import com.scnsoft.permissions.persistence.entity.User;
 import com.scnsoft.permissions.persistence.repository.GroupRepository;
 import com.scnsoft.permissions.persistence.repository.PermissionRepository;
 import com.scnsoft.permissions.persistence.repository.UserRepository;
-import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,7 +22,8 @@ public class UserService extends BaseService<User, UserDTO, Long> {
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
     private final UserConverter converter;
-
+    @Autowired
+    private BCryptPasswordEncoder encoder;
     private final PermissionRepository permissionRepository;
 
     public UserService(UserRepository userRepository,
@@ -46,7 +48,7 @@ public class UserService extends BaseService<User, UserDTO, Long> {
         return Optional.ofNullable(userDTO)
                 .filter(userDTO1 -> !userRepository.existsByLogin(userDTO1.getLogin()))
                 .map(userDTO1 -> {
-                    userDTO1.setPassword(encrypt(userDTO1.getPassword()));
+                    userDTO1.setPassword(encoder.encode(userDTO1.getPassword()));
                     saveEntity(userDTO1);
                     return userDTO1;
                 });
@@ -77,10 +79,6 @@ public class UserService extends BaseService<User, UserDTO, Long> {
     @Override
     public List<UserDTO> findAll() {
         return entities().collect(Collectors.toList());
-    }
-
-    private String encrypt(String s) {
-        return DigestUtils.md5Hex(s);
     }
 
     private AdditionalPermission build(User user, Permission permission, boolean isEnabled) {

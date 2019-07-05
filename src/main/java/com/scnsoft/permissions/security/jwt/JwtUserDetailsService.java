@@ -19,11 +19,11 @@ public class JwtUserDetailsService implements UserDetailsService {
         this.jwtUserFactory = jwtUserFactory;
     }
 
-
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) {
-        return userService.findByLogin(username).map(jwtUserFactory::create)
+        return userService.findByLogin(username)
+                .map(jwtUserFactory::build)
                 .orElseThrow(() -> new UsernameNotFoundException("User with name: " + username + "not found"));
     }
 }
