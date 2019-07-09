@@ -22,7 +22,9 @@ public class JwtTokenFilter extends GenericFilterBean {
     public void doFilter(ServletRequest servletRequest,
                          ServletResponse servletResponse,
                          FilterChain filterChain) throws IOException, ServletException {
-        Optional.ofNullable(jwtTokenProvider.resolveToken((HttpServletRequest) servletRequest))
+        String value = jwtTokenProvider.resolveToken((HttpServletRequest) servletRequest);
+        Optional.ofNullable(value)
+                .filter(s -> !s.isEmpty())
                 .map(jwtTokenProvider::getAuthentication)
                 .ifPresent(SecurityContextHolder.getContext()::setAuthentication);
         filterChain.doFilter(servletRequest, servletResponse);

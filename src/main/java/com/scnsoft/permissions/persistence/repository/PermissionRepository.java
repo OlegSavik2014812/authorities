@@ -17,5 +17,5 @@ public interface PermissionRepository extends CrudRepository<Permission, Long> {
     boolean existsByName(@Param("name") String name);
 
     @Query("select permission from Permission permission where name in :names")
-    Iterable<Permission> findPermissionsByNames(@Param("names") Iterable<String> inventoryIdList);
+    Iterable<Permission> findPermissionsByNames(@Param("names") Iterable<String> strings);
 }

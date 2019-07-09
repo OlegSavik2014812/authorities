@@ -9,6 +9,6 @@ import java.util.Map;
 public class PermissionDTO implements EntityDTO {
     private Long id;
     private String name;
-    private List<Long> groupIds;
-    private Map<UserDTO, Boolean> additionalPermissions;
+    private List<String> groupNames;
+    private Map<String, Boolean> assignedUserNames;
 }

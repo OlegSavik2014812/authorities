@@ -38,6 +38,11 @@ public class UserController {
         return authenticate(userDTO);
     }
 
+    @GetMapping("{id}")
+    public UserDTO getByName(@RequestParam String login) {
+        return userService.findByLogin(login).orElseThrow(RuntimeException::new);
+    }
+
     @PostMapping("signUp")
     public ResponseEntity signUp(@RequestBody UserDTO user) {
         UserDTO userDTO = userService.signUp(user).orElseThrow(RuntimeException::new);
@@ -51,14 +56,14 @@ public class UserController {
     }
 
     @PreAuthorize("hasAnyAuthority('admin','moderator')")
-    @GetMapping(path = "assignGroup", params = {"login", "groupName"})
+    @GetMapping(path = "assignGroup", params = {"login", "groupNames"})
     public UserDTO assignGroup(@RequestParam String login, @RequestParam String groupName) {
         userService.assignGroup(login, groupName);
         return userService.findByLogin(login).orElseThrow(RuntimeException::new);
     }
 
     @PreAuthorize("hasAnyAuthority('admin','moderator')")
-    @GetMapping(path = "assignPermission", params = {"login", "groupName"})
+    @GetMapping(path = "assignPermission", params = {"login", "groupNames"})
     public UserDTO assignPermission(@RequestParam String login,
                                     @RequestParam String permissionName,
                                     @RequestParam boolean isEnabled) {

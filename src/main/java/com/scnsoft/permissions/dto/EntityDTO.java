@@ -1,4 +1,6 @@
 package com.scnsoft.permissions.dto;
 
-public interface EntityDTO {
+import java.io.Serializable;
+
+public interface EntityDTO extends Serializable {
 }

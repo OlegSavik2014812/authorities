@@ -9,6 +9,6 @@ public class UserDTO implements EntityDTO {
     private Long id;
     private String login;
     private String password;
-    private Long groupId;
+    private String groupName;
     private Map<String, Boolean> additionalPermissions;
 }

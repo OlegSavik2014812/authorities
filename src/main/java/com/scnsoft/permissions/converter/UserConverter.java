@@ -35,8 +35,8 @@ public class UserConverter implements EntityConverter<User, UserDTO> {
         userDTO.setPassword(entity.getPassword());
 
         Optional.ofNullable(entity.getGroup())
-                .map(Group::getId)
-                .ifPresent(userDTO::setGroupId);
+                .map(Group::getName)
+                .ifPresent(userDTO::setGroupName);
         Map<String, Boolean> map = new HashMap<>();
         entity.getAdditionalPermissions()
                 .forEach(additionalPermission ->
@@ -56,8 +56,8 @@ public class UserConverter implements EntityConverter<User, UserDTO> {
         user.setLogin(entity.getLogin());
         user.setPassword(entity.getPassword());
 
-        Optional.ofNullable(entity.getGroupId())
-                .flatMap(repository::findById)
+        Optional.ofNullable(entity.getGroupName())
+                .flatMap(repository::findUserGroupByName)
                 .ifPresent(user::setGroup);
         if (repository.existsById(entity.getId())) {
             Map<String, Boolean> map = entity.getAdditionalPermissions();

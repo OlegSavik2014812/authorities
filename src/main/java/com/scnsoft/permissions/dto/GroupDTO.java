@@ -8,6 +8,6 @@ import java.util.List;
 public class GroupDTO implements EntityDTO{
     private Long id;
     private String name;
-    private List<Long> userIds;
-    private List<Long> permissionsIds;
+    private List<String> userNames;
+    private List<String> permissionsNames;
 }
