@@ -4,12 +4,10 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -32,11 +30,6 @@ public class JwtTokenProvider {
         this.userDetailsService = userDetailsService;
     }
 
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
     @PostConstruct
     protected void init() {
         secret = Base64.getEncoder().encodeToString(secret.getBytes());
@@ -51,24 +44,27 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public Authentication getAuthentication(String token) {
-        String username = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
+    Authentication getAuthentication(String token) {
+        String username = Jwts.parser()
+                .setSigningKey(secret)
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+
         UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
         return new UsernamePasswordAuthenticationToken(userDetails, EMPTY, userDetails.getAuthorities());
     }
 
-    public String resolveToken(HttpServletRequest servletRequest) {
+    String resolveToken(HttpServletRequest servletRequest) {
         return Optional.ofNullable(servletRequest.getHeader(AUTHORIZATION_HEADER))
                 .filter(token -> token.startsWith(TOKEN_ID))
-                .map(token -> token.substring(7))
+                .map(token -> token.substring(TOKEN_ID.length() + 1))
                 .orElse(EMPTY);
     }
 
     private List<String> getRoleNames(Collection<? extends GrantedAuthority> authorities) {
         List<String> list = new ArrayList<>();
-        for (GrantedAuthority authority : authorities) {
-            list.add(authority.getAuthority());
-        }
+        authorities.forEach(auth -> list.add(auth.getAuthority()));
         return list;
     }
 }

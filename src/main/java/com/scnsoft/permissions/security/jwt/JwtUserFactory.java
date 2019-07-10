@@ -6,7 +6,10 @@ import com.scnsoft.permissions.service.GroupService;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -28,14 +31,13 @@ public class JwtUserFactory {
     }
 
     private Collection<SimpleGrantedAuthority> getAvailableUserAuthorities(UserDTO userDTO) {
-        Map<String, Boolean> permissionMap = Optional.ofNullable(userDTO.getAdditionalPermissions())
+        Map<String, Boolean> additionalPermissionMap = Optional.ofNullable(userDTO.getAdditionalPermissions())
                 .orElse(Collections.emptyMap());
 
-        List<String> userPermissionsNames = groupService.findByName(userDTO.getGroupName())
+        Collection<String> userPermissionsNames = groupService.findByName(userDTO.getGroupName())
                 .map(GroupDTO::getPermissionsNames)
                 .map(groupPermissionNames -> {
-                    Set<String> additionalPermissionNames = permissionMap.keySet();
-                    groupPermissionNames.addAll(additionalPermissionNames);
+                    groupPermissionNames.addAll(additionalPermissionMap.keySet());
                     return groupPermissionNames;
                 })
                 .filter(list -> !list.isEmpty())
@@ -43,7 +45,7 @@ public class JwtUserFactory {
 
         return userPermissionsNames
                 .stream()
-                .filter(permissionName -> isPermissionSupported(permissionName, permissionMap))
+                .filter(permissionName -> isPermissionSupported(permissionName, additionalPermissionMap))
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toSet());
     }

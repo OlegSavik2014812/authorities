@@ -1,5 +1,6 @@
 package com.scnsoft.permissions.security.jwt;
 
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -24,7 +25,7 @@ public class JwtTokenFilter extends GenericFilterBean {
                          FilterChain filterChain) throws IOException, ServletException {
         String value = jwtTokenProvider.resolveToken((HttpServletRequest) servletRequest);
         Optional.ofNullable(value)
-                .filter(s -> !s.isEmpty())
+                .filter(Strings::isNotBlank)
                 .map(jwtTokenProvider::getAuthentication)
                 .ifPresent(SecurityContextHolder.getContext()::setAuthentication);
         filterChain.doFilter(servletRequest, servletResponse);
