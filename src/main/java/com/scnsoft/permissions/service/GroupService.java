@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class GroupService extends BaseService<Group, GroupDTO, Long> {
+public class GroupService extends BaseCrudService<Group, GroupDTO, Long> {
     private final GroupRepository groupRepository;
     private final PermissionRepository permissionRepository;
     private final GroupConverter groupConverter;

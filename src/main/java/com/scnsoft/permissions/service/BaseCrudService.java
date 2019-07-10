@@ -10,11 +10,11 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public abstract class BaseService<T extends PersistenceEntity<R>, K extends EntityDTO, R extends Serializable> implements EntityService<K, R> {
+public abstract class BaseCrudService<T extends PersistenceEntity<R>, K extends EntityDTO, R extends Serializable> implements EntityService<K, R> {
     private CrudRepository<T, R> repository;
     private EntityConverter<T, K> converter;
 
-    public BaseService(CrudRepository<T, R> repository, EntityConverter<T, K> converter) {
+    public BaseCrudService(CrudRepository<T, R> repository, EntityConverter<T, K> converter) {
         this.repository = repository;
         this.converter = converter;
     }

@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService extends BaseService<User, UserDTO, Long> {
+public class UserService extends BaseCrudService<User, UserDTO, Long> {
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
     private final UserConverter converter;
