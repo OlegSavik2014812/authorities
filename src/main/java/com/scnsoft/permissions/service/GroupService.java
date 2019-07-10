@@ -3,8 +3,8 @@ package com.scnsoft.permissions.service;
 import com.scnsoft.permissions.converter.GroupConverter;
 import com.scnsoft.permissions.dto.GroupDTO;
 import com.scnsoft.permissions.persistence.entity.Group;
-import com.scnsoft.permissions.persistence.repository.PermissionRepository;
 import com.scnsoft.permissions.persistence.repository.GroupRepository;
+import com.scnsoft.permissions.persistence.repository.PermissionRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,7 +27,8 @@ public class GroupService extends BaseService<Group, GroupDTO, Long> {
     }
 
     public Optional<GroupDTO> findByName(String userGroupName) {
-        return groupRepository.findUserGroupByName(userGroupName).map(groupConverter::toDTO);
+        return groupRepository.findUserGroupByName(userGroupName)
+                .map(groupConverter::toDTO);
     }
 
     public Optional<GroupDTO> assignPermission(String userGroupName, String permissionByName) {

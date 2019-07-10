@@ -6,19 +6,15 @@ import com.scnsoft.permissions.persistence.repository.GroupRepository;
 import com.scnsoft.permissions.persistence.repository.PermissionRepository;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Component
 public class UserConverter implements EntityConverter<User, UserDTO> {
-    private final GroupRepository repository;
+    private final GroupRepository groupRepository;
     private final PermissionRepository permissionRepository;
 
     public UserConverter(GroupRepository repository, PermissionRepository permissionRepository) {
-        this.repository = repository;
+        this.groupRepository = repository;
         this.permissionRepository = permissionRepository;
     }
 
@@ -28,8 +24,7 @@ public class UserConverter implements EntityConverter<User, UserDTO> {
             return null;
         }
         UserDTO userDTO = new UserDTO();
-        Optional.ofNullable(entity.getId())
-                .ifPresent(userDTO::setId);
+
         userDTO.setId(entity.getId());
         userDTO.setLogin(entity.getLogin());
         userDTO.setPassword(entity.getPassword());
@@ -37,10 +32,14 @@ public class UserConverter implements EntityConverter<User, UserDTO> {
         Optional.ofNullable(entity.getGroup())
                 .map(Group::getName)
                 .ifPresent(userDTO::setGroupName);
+
         Map<String, Boolean> map = new HashMap<>();
-        entity.getAdditionalPermissions()
+
+        Optional.ofNullable(entity.getAdditionalPermissions())
+                .orElse(Collections.emptyList())
                 .forEach(additionalPermission ->
-                        map.put(additionalPermission.getPermission().getName(), additionalPermission.isEnabled()));
+                        map.put(additionalPermission.getPermission().getName(),
+                                additionalPermission.isEnabled()));
         userDTO.setAdditionalPermissions(map);
         return userDTO;
     }
@@ -57,27 +56,27 @@ public class UserConverter implements EntityConverter<User, UserDTO> {
         user.setPassword(entity.getPassword());
 
         Optional.ofNullable(entity.getGroupName())
-                .flatMap(repository::findUserGroupByName)
+                .flatMap(groupRepository::findUserGroupByName)
                 .ifPresent(user::setGroup);
-        if (repository.existsById(entity.getId())) {
-            Map<String, Boolean> map = entity.getAdditionalPermissions();
-            List<AdditionalPermission> collect = map.entrySet().stream().map(stringBooleanEntry ->
-                    build(user, stringBooleanEntry.getKey(), stringBooleanEntry.getValue())).collect(Collectors.toList());
-            user.setAdditionalPermissions(collect);
+        if (user.getId() != null) {
+            List<AdditionalPermission> list =
+                    getAdditionalPermissions(user, entity.getAdditionalPermissions());
+            user.setAdditionalPermissions(list);
         }
         return user;
     }
 
-    private AdditionalPermission build(User user, String permName, boolean isEnabled) {
-        AdditionalPermission additionalPermission = new AdditionalPermission();
-        Permission permission = permissionRepository.findPermissionByName(permName).orElse(new Permission());
-        CompositePermissionId id = new CompositePermissionId();
-        id.setUserId(user.getId());
-        id.setPermissionId(permission.getId());
-        additionalPermission.setId(id);
-        additionalPermission.setPermission(permission);
-        additionalPermission.setUser(user);
-        additionalPermission.setEnabled(isEnabled);
-        return additionalPermission;
+    private List<AdditionalPermission> getAdditionalPermissions(User user, Map<String, Boolean> map) {
+        Iterable<Permission> permissionsByNames = permissionRepository.findPermissionsByNames(map.keySet());
+        List<AdditionalPermission> list = new ArrayList<>();
+        permissionsByNames
+                .forEach(permission ->
+                        AdditionalPermission.builder()
+                                .id(new CompositePermissionId(user.getId(), permission.getId()))
+                                .user(user)
+                                .permission(permission)
+                                .isEnabled(map.get(permission.getName()))
+                                .build());
+        return list;
     }
 }

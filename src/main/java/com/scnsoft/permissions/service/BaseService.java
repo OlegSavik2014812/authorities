@@ -25,7 +25,8 @@ public abstract class BaseService<T extends PersistenceEntity<R>, K extends Enti
                 .map(converter::toPersistence)
                 .filter(entity -> Optional.ofNullable(entity.getId())
                         .map(id -> !repository.existsById(id))
-                        .orElse(true))
+                        .orElse(true)
+                )
                 .map(repository::save)
                 .map(converter::toDTO);
     }

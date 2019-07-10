@@ -9,7 +9,6 @@ import com.scnsoft.permissions.persistence.entity.User;
 import com.scnsoft.permissions.persistence.repository.GroupRepository;
 import com.scnsoft.permissions.persistence.repository.PermissionRepository;
 import com.scnsoft.permissions.persistence.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,33 +21,27 @@ public class UserService extends BaseService<User, UserDTO, Long> {
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
     private final UserConverter converter;
-    @Autowired
-    private BCryptPasswordEncoder encoder;
     private final PermissionRepository permissionRepository;
+
+    private final BCryptPasswordEncoder encoder;
 
     public UserService(UserRepository userRepository,
                        GroupRepository groupRepository,
-                       UserConverter converter, PermissionRepository permissionRepository) {
+                       UserConverter converter,
+                       PermissionRepository permissionRepository, BCryptPasswordEncoder encoder) {
         super(userRepository, converter);
         this.userRepository = userRepository;
         this.groupRepository = groupRepository;
         this.converter = converter;
         this.permissionRepository = permissionRepository;
+        this.encoder = encoder;
     }
 
-    public UserDTO signIn(UserDTO userDTO) {
-        User user = userRepository.findUserByLogin(userDTO.getLogin())
-                .filter(user1 -> user1.getPassword()
-                        .equals(userDTO.getPassword()))
-                .orElse(null);
-        return converter.toDTO(user);
-    }
-
-    public Optional<UserDTO> signUp(UserDTO userDTO) {
+    public Optional<UserDTO> save(UserDTO userDTO) {
         return Optional.ofNullable(userDTO)
                 .filter(userDTO1 -> !userRepository.existsByLogin(userDTO1.getLogin()))
                 .map(userDTO1 -> {
-                    userDTO1.setPassword(encoder.encode(userDTO1.getPassword()));
+                    userDTO1.setPassword(encoder.encode(userDTO.getPassword()));
                     saveEntity(userDTO1);
                     return userDTO1;
                 });
@@ -70,26 +63,27 @@ public class UserService extends BaseService<User, UserDTO, Long> {
 
     public void assignAdditionalPermission(String login, String permissionName, boolean isEnabled) {
         User user = userRepository.findUserByLogin(login).orElseThrow(RuntimeException::new);
-        Permission permission = permissionRepository.findPermissionByName(permissionName).orElseThrow(RuntimeException::new);
-        AdditionalPermission additionalPermission = build(user, permission, isEnabled);
-        user.getAdditionalPermissions().add(additionalPermission);
+        Permission permission = permissionRepository.findPermissionByName(permissionName)
+                .orElseGet(() -> {
+                    Permission newPermission = new Permission();
+                    newPermission.setName(permissionName);
+                    permissionRepository.save(newPermission);
+                    return permissionRepository.findPermissionByName(permissionName)
+                            .orElseThrow(RuntimeException::new);
+                });
+        user.getAdditionalPermissions()
+                .add(AdditionalPermission.builder()
+                        .id(new CompositePermissionId(user.getId(), permission.getId()))
+                        .user(user)
+                        .permission(permission)
+                        .isEnabled(isEnabled)
+                        .build()
+                );
         userRepository.save(user);
     }
 
     @Override
     public List<UserDTO> findAll() {
         return entities().collect(Collectors.toList());
-    }
-
-    private AdditionalPermission build(User user, Permission permission, boolean isEnabled) {
-        CompositePermissionId compositePermissionId = new CompositePermissionId();
-        compositePermissionId.setUserId(user.getId());
-        compositePermissionId.setPermissionId(permission.getId());
-        AdditionalPermission additionalPermission = new AdditionalPermission();
-        additionalPermission.setId(compositePermissionId);
-        additionalPermission.setUser(user);
-        additionalPermission.setPermission(permission);
-        additionalPermission.setEnabled(isEnabled);
-        return additionalPermission;
     }
 }
