@@ -1,7 +1,7 @@
 package com.scnsoft.permissions.service;
 
 import com.scnsoft.permissions.dto.UserDTO;
-import com.scnsoft.permissions.log.ExecutionTime;
+import com.scnsoft.permissions.util.ExecutionTime;
 import com.scnsoft.permissions.security.jwt.JwtTokenProvider;
 import com.scnsoft.permissions.security.jwt.JwtUserDetailsService;
 import org.springframework.security.authentication.AuthenticationManager;

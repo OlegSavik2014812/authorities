@@ -1,4 +1,4 @@
-package com.scnsoft.permissions.log;
+package com.scnsoft.permissions.util;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
