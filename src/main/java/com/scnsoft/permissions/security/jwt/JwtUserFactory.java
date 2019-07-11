@@ -3,6 +3,8 @@ package com.scnsoft.permissions.security.jwt;
 import com.scnsoft.permissions.dto.GroupDTO;
 import com.scnsoft.permissions.dto.UserDTO;
 import com.scnsoft.permissions.service.GroupService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.Collection;
@@ -12,6 +14,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class JwtUserFactory {
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtUserFactory.class);
     private final GroupService groupService;
 
     public JwtUserFactory(GroupService groupService) {
@@ -33,7 +36,7 @@ public class JwtUserFactory {
                 .orElse(Collections.emptyMap());
 
         Collection<String> userPermissionsNames = groupService.findByName(userDTO.getGroupName())
-                .map(GroupDTO::getPermissionsNames)
+                .map(GroupDTO::getPermissionNames)
                 .map(groupPermissionNames -> {
                     groupPermissionNames.addAll(additionalPermissionMap.keySet());
                     return groupPermissionNames;

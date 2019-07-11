@@ -49,15 +49,22 @@ public class JwtTokenProvider {
                 .getBody()
                 .getSubject();
 
-        UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         return new UsernamePasswordAuthenticationToken(userDetails, EMPTY, userDetails.getAuthorities());
     }
 
     String resolveToken(HttpServletRequest servletRequest) {
-        return Optional.ofNullable(servletRequest.getHeader(AUTHORIZATION_HEADER))
-                .filter(token -> token.startsWith(TOKEN_ID))
-                .map(token -> token.substring(TOKEN_ID.length() + 1))
-                .orElse(EMPTY);
+        String header = servletRequest.getHeader(AUTHORIZATION_HEADER);
+        if (header == null) {
+            return EMPTY;
+        }
+        if (header.isEmpty()) {
+            return EMPTY;
+        }
+        if (!header.startsWith(TOKEN_ID)) {
+            return EMPTY;
+        }
+        return header.substring(TOKEN_ID.length() + 1);
     }
 
     private List<String> getRoleNames(Collection<? extends GrantedAuthority> authorities) {

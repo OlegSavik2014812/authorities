@@ -9,5 +9,5 @@ public class GroupDTO implements EntityDTO{
     private Long id;
     private String name;
     private List<String> userNames;
-    private List<String> permissionsNames;
+    private List<String> permissionNames;
 }

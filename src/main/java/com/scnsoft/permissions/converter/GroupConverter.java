@@ -35,8 +35,9 @@ public class GroupConverter implements EntityConverter<Group, GroupDTO> {
         GroupDTO groupDTO = new GroupDTO();
         groupDTO.setId(entity.getId());
         groupDTO.setName(entity.getName());
-        groupDTO.setPermissionsNames(getList(entity.getPermissions(), Permission::getName));
-        groupDTO.setUserNames(getList(entity.getUsers(), User::getLogin));
+        groupDTO.setPermissionNames(convert(entity.getPermissions(), Permission::getName));
+        groupDTO.setUserNames(convert(entity.getUsers(), User::getLogin));
+
         return groupDTO;
     }
 
@@ -46,27 +47,30 @@ public class GroupConverter implements EntityConverter<Group, GroupDTO> {
             return null;
         }
         Group group = new Group();
+
         Optional.ofNullable(entity.getId())
                 .ifPresent(group::setId);
         group.setName(entity.getName());
 
         List<Permission> permissions = new ArrayList<>();
         permissionRepository
-                .findPermissionsByNames(entity.getPermissionsNames())
+                .findPermissionsByNames(entity.getPermissionNames())
                 .forEach(permissions::add);
         group.setPermissions(permissions);
 
         List<User> users = new ArrayList<>();
-        userRepository.findUsersByByNames(entity.getUserNames()).forEach(users::add);
+        userRepository
+                .findUsersByByNames(entity.getUserNames())
+                .forEach(users::add);
         group.setUsers(users);
 
         return group;
     }
 
-    private static <T, K> List<T> getList(Iterable<K> source, Function<K, T> mapper) {
+    private <T, K> List<T> convert(Iterable<K> source, Function<K, T> converterFunction) {
         return StreamSupport.stream(source.spliterator(), false)
                 .filter(Objects::nonNull)
-                .map(mapper)
+                .map(converterFunction)
                 .collect(Collectors.toList());
     }
 }

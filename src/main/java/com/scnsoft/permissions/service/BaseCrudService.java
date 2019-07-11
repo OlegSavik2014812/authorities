@@ -33,7 +33,9 @@ public abstract class BaseCrudService<T extends PersistenceEntity<R>, K extends 
 
     @Override
     public Optional<K> findById(R id) {
-        return repository.findById(id).map(converter::toDTO);
+        return Optional.ofNullable(id)
+                .flatMap(repository::findById)
+                .map(converter::toDTO);
     }
 
     @Override

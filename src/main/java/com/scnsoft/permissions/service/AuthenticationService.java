@@ -1,6 +1,7 @@
 package com.scnsoft.permissions.service;
 
 import com.scnsoft.permissions.dto.UserDTO;
+import com.scnsoft.permissions.log.ExecutionTime;
 import com.scnsoft.permissions.security.jwt.JwtTokenProvider;
 import com.scnsoft.permissions.security.jwt.JwtUserDetailsService;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -8,11 +9,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 @Component
 public class AuthenticationService {
+    private static final String LOGIN_KEY = "login";
+    private static final String TOKEN_KEY = "token";
     private final AuthenticationManager authenticationManager;
     private final JwtUserDetailsService userDetailsService;
     private final JwtTokenProvider jwtTokenProvider;
@@ -25,26 +29,28 @@ public class AuthenticationService {
         this.userService = userService;
     }
 
+    @ExecutionTime
     public Map<Object, Object> signIn(UserDTO userDTO) {
         String login = userDTO.getLogin();
         String password = userDTO.getPassword();
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login, password));
-        UserDetails userDetails = userDetailsService.loadUserByUsername(login);
-        String token = jwtTokenProvider.createToken(userDetails);
-
-        Map<Object, Object> map = new HashMap<>();
-        map.put("login", login);
-        map.put("token", token);
-        return map;
+        return authenticate(login, password);
     }
 
+    @ExecutionTime
     public Map<Object, Object> signUp(UserDTO userDTO) {
         String login = userDTO.getLogin();
         String password = userDTO.getPassword();
         userService.save(userDTO);
-        UserDTO userDTO1 = new UserDTO();
-        userDTO1.setLogin(login);
-        userDTO1.setPassword(password);
-        return signIn(userDTO1);
+        return authenticate(login, password);
+    }
+
+    private Map<Object, Object> authenticate(String login, String password) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login, password));
+        UserDetails userDetails = userDetailsService.loadUserByUsername(login);
+        String token = jwtTokenProvider.createToken(userDetails);
+        Map<Object, Object> map = new HashMap<>();
+        map.put(LOGIN_KEY, login);
+        map.put(TOKEN_KEY, token);
+        return Collections.unmodifiableMap(map);
     }
 }
