@@ -19,8 +19,7 @@ public class PerformanceLogger {
             long start = System.currentTimeMillis();
             object = point.proceed();
             long end = System.currentTimeMillis();
-            long totalTime = end - start;
-            LOGGER.info("The performance of {} method is: {} milliseconds", point.getSignature(), totalTime);
+            LOGGER.info("The performance of {} method is: {} milliseconds", point.getSignature(), end - start);
             return object;
         } catch (Throwable e) {
             LOGGER.error("Exception: {}", e.getLocalizedMessage());
