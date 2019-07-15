@@ -10,6 +10,7 @@ import java.util.*;
 
 @Component
 public class UserConverter implements EntityConverter<User, UserDTO> {
+    private static final String EMPTY = "";
     private final GroupRepository groupRepository;
     private final PermissionRepository permissionRepository;
 
@@ -23,15 +24,8 @@ public class UserConverter implements EntityConverter<User, UserDTO> {
         if (entity == null) {
             return null;
         }
-        UserDTO userDTO = new UserDTO();
-
-        userDTO.setId(entity.getId());
-        userDTO.setLogin(entity.getLogin());
-        userDTO.setPassword(entity.getPassword());
-
-        Optional.ofNullable(entity.getGroup())
-                .map(Group::getName)
-                .ifPresent(userDTO::setGroupName);
+        String groupName = Optional.ofNullable(entity.getGroup())
+                .map(Group::getName).orElse(EMPTY);
 
         Map<String, Boolean> map = new HashMap<>();
         List<AdditionalPermission> permissionList = Optional.ofNullable(entity.getAdditionalPermissions())
@@ -42,9 +36,14 @@ public class UserConverter implements EntityConverter<User, UserDTO> {
                         additionalPermission.getPermission().getName(),
                         additionalPermission.isEnabled()
                 ));
-        userDTO.setAdditionalPermissions(map);
 
-        return userDTO;
+        return UserDTO.builder()
+                .id(entity.getId())
+                .login(entity.getLogin())
+                .password(entity.getPassword())
+                .groupName(groupName)
+                .additionalPermissions(map)
+                .build();
     }
 
     @Override

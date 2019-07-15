@@ -31,14 +31,12 @@ public class GroupConverter implements EntityConverter<Group, GroupDTO> {
         if (entity == null) {
             return null;
         }
-
-        GroupDTO groupDTO = new GroupDTO();
-        groupDTO.setId(entity.getId());
-        groupDTO.setName(entity.getName());
-        groupDTO.setPermissionNames(convert(entity.getPermissions(), Permission::getName));
-        groupDTO.setUserNames(convert(entity.getUsers(), User::getLogin));
-
-        return groupDTO;
+        return GroupDTO.builder()
+                .id(entity.getId())
+                .name(entity.getName())
+                .permissionNames(convert(entity.getPermissions(), Permission::getName))
+                .userNames(convert(entity.getUsers(), User::getLogin))
+                .build();
     }
 
     @Override

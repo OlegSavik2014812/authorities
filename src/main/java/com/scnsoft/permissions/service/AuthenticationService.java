@@ -1,16 +1,14 @@
 package com.scnsoft.permissions.service;
 
 import com.scnsoft.permissions.dto.UserDTO;
-import com.scnsoft.permissions.util.ExecutionTime;
 import com.scnsoft.permissions.security.jwt.JwtTokenProvider;
 import com.scnsoft.permissions.security.jwt.JwtUserDetailsService;
+import com.scnsoft.permissions.util.ExecutionTime;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 @Component
@@ -48,9 +46,6 @@ public class AuthenticationService {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login, password));
         UserDetails userDetails = userDetailsService.loadUserByUsername(login);
         String token = jwtTokenProvider.createToken(userDetails);
-        Map<Object, Object> map = new HashMap<>();
-        map.put(LOGIN_KEY, login);
-        map.put(TOKEN_KEY, token);
-        return Collections.unmodifiableMap(map);
+        return Map.of(TOKEN_KEY, token, LOGIN_KEY, login);
     }
 }
