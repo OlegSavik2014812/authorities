@@ -11,7 +11,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Collection;
+import java.util.List;
 
 public class JwtTokenProvider {
     private static final String AUTHORIZATION_HEADER = "Authorization";
@@ -64,7 +67,7 @@ public class JwtTokenProvider {
         if (!header.startsWith(TOKEN_ID)) {
             return EMPTY;
         }
-        return header.substring(TOKEN_ID.length() + 1);
+        return header.substring(TOKEN_ID.length());
     }
 
     private List<String> getRoleNames(Collection<? extends GrantedAuthority> authorities) {

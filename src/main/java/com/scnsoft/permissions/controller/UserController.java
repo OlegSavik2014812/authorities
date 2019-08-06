@@ -7,8 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("users")
 public class UserController {
@@ -29,8 +31,13 @@ public class UserController {
     }
 
     @GetMapping("{id}")
-    public UserDTO getByName(@PathVariable(value = "id") String login) {
-        return userService.findByLogin(login).orElseThrow(RuntimeException::new);
+    public UserDTO getById(@PathVariable(value = "id") Long id) {
+        return userService.findById(id).orElseThrow(RuntimeException::new);
+    }
+
+    @GetMapping()
+    public List<UserDTO> getAll() {
+        return userService.findAll();
     }
 
     @PostMapping("signUp")
