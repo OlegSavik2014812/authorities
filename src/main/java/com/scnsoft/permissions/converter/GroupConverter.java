@@ -1,10 +1,10 @@
 package com.scnsoft.permissions.converter;
 
 import com.scnsoft.permissions.dto.GroupDTO;
-import com.scnsoft.permissions.persistence.entity.Group;
-import com.scnsoft.permissions.persistence.entity.Permission;
+import com.scnsoft.permissions.persistence.entity.permission.Group;
+import com.scnsoft.permissions.persistence.entity.permission.Permission;
 import com.scnsoft.permissions.persistence.entity.User;
-import com.scnsoft.permissions.persistence.repository.PermissionRepository;
+import com.scnsoft.permissions.persistence.repository.permission.PermissionRepository;
 import com.scnsoft.permissions.persistence.repository.UserRepository;
 import org.springframework.stereotype.Component;
 

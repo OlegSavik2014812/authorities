@@ -1,5 +1,8 @@
 package com.scnsoft.permissions.persistence.entity;
 
+import com.scnsoft.permissions.persistence.entity.dentistry.UserTooth;
+import com.scnsoft.permissions.persistence.entity.permission.AdditionalPermission;
+import com.scnsoft.permissions.persistence.entity.permission.Group;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -35,4 +38,10 @@ public class User implements PersistenceEntity<Long> {
             orphanRemoval = true,
             fetch = FetchType.LAZY)
     private List<AdditionalPermission> additionalPermissions;
+
+    @OneToMany(mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
+    private List<UserTooth> teeth;
 }

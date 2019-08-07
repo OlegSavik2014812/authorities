@@ -67,7 +67,11 @@ public class JwtTokenProvider {
         if (!header.startsWith(TOKEN_ID)) {
             return EMPTY;
         }
-        return header.substring(TOKEN_ID.length());
+        String substring = header.substring(TOKEN_ID.length());
+        if (substring.isEmpty()) {
+            return EMPTY;
+        }
+        return substring;
     }
 
     private List<String> getRoleNames(Collection<? extends GrantedAuthority> authorities) {

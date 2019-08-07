@@ -2,12 +2,12 @@ package com.scnsoft.permissions.service;
 
 import com.scnsoft.permissions.converter.UserConverter;
 import com.scnsoft.permissions.dto.UserDTO;
-import com.scnsoft.permissions.persistence.entity.AdditionalPermission;
-import com.scnsoft.permissions.persistence.entity.CompositePermissionId;
-import com.scnsoft.permissions.persistence.entity.Permission;
+import com.scnsoft.permissions.persistence.entity.permission.AdditionalPermission;
+import com.scnsoft.permissions.persistence.entity.permission.CompositePermissionId;
+import com.scnsoft.permissions.persistence.entity.permission.Permission;
 import com.scnsoft.permissions.persistence.entity.User;
-import com.scnsoft.permissions.persistence.repository.GroupRepository;
-import com.scnsoft.permissions.persistence.repository.PermissionRepository;
+import com.scnsoft.permissions.persistence.repository.permission.GroupRepository;
+import com.scnsoft.permissions.persistence.repository.permission.PermissionRepository;
 import com.scnsoft.permissions.persistence.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;

@@ -3,7 +3,7 @@ package com.scnsoft.permissions.dto;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.Map;
+import java.util.List;
 
 @Data
 @Builder
@@ -12,5 +12,5 @@ public class UserDTO implements EntityDTO {
     private String login;
     private String password;
     private String groupName;
-    private Map<String, Boolean> additionalPermissions;
+    private List<String> permissions;
 }

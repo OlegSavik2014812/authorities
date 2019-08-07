@@ -30,9 +30,14 @@ public class UserController {
         return ResponseEntity.ok(map);
     }
 
-    @GetMapping("{id}")
+    @GetMapping(value = "{id}")
     public UserDTO getById(@PathVariable(value = "id") Long id) {
         return userService.findById(id).orElseThrow(RuntimeException::new);
+    }
+
+    @GetMapping("user")
+    public UserDTO getByLogin(@RequestParam(value = "name") String login) {
+        return userService.findByLogin(login).orElseThrow(RuntimeException::new);
     }
 
     @GetMapping()

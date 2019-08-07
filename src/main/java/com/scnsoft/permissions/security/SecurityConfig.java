@@ -4,7 +4,6 @@ import com.scnsoft.permissions.security.jwt.JwtConfig;
 import com.scnsoft.permissions.security.jwt.JwtTokenProvider;
 import com.scnsoft.permissions.security.jwt.JwtUserDetailsService;
 import com.scnsoft.permissions.security.jwt.JwtUserFactory;
-import com.scnsoft.permissions.service.GroupService;
 import com.scnsoft.permissions.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -48,8 +47,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public JwtUserFactory jwtUserFactory(GroupService groupService) {
-        return new JwtUserFactory(groupService);
+    public JwtUserFactory jwtUserFactory() {
+        return new JwtUserFactory();
     }
 
     @Bean

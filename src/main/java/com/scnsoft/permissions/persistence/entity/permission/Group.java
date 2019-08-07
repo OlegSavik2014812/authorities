@@ -1,5 +1,7 @@
-package com.scnsoft.permissions.persistence.entity;
+package com.scnsoft.permissions.persistence.entity.permission;
 
+import com.scnsoft.permissions.persistence.entity.PersistenceEntity;
+import com.scnsoft.permissions.persistence.entity.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

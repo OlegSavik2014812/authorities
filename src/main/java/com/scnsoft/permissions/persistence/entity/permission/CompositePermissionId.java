@@ -1,4 +1,4 @@
-package com.scnsoft.permissions.persistence.entity;
+package com.scnsoft.permissions.persistence.entity.permission;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

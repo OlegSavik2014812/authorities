@@ -1,6 +1,6 @@
-package com.scnsoft.permissions.persistence.repository;
+package com.scnsoft.permissions.persistence.repository.permission;
 
-import com.scnsoft.permissions.persistence.entity.Group;
+import com.scnsoft.permissions.persistence.entity.permission.Group;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;

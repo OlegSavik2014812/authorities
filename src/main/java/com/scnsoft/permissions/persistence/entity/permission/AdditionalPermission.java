@@ -1,12 +1,13 @@
-package com.scnsoft.permissions.persistence.entity;
+package com.scnsoft.permissions.persistence.entity.permission;
 
+import com.scnsoft.permissions.persistence.entity.PersistenceEntity;
+import com.scnsoft.permissions.persistence.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
@@ -14,7 +15,7 @@ import java.io.Serializable;
 @Builder
 @Entity
 @Table(name = "user_permissions")
-public class AdditionalPermission implements PersistenceEntity<CompositePermissionId>, Serializable {
+public class AdditionalPermission implements PersistenceEntity<CompositePermissionId> {
     @EmbeddedId
     private CompositePermissionId id;
 

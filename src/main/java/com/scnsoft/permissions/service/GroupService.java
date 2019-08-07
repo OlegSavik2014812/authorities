@@ -2,9 +2,9 @@ package com.scnsoft.permissions.service;
 
 import com.scnsoft.permissions.converter.GroupConverter;
 import com.scnsoft.permissions.dto.GroupDTO;
-import com.scnsoft.permissions.persistence.entity.Group;
-import com.scnsoft.permissions.persistence.repository.GroupRepository;
-import com.scnsoft.permissions.persistence.repository.PermissionRepository;
+import com.scnsoft.permissions.persistence.entity.permission.Group;
+import com.scnsoft.permissions.persistence.repository.permission.GroupRepository;
+import com.scnsoft.permissions.persistence.repository.permission.PermissionRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

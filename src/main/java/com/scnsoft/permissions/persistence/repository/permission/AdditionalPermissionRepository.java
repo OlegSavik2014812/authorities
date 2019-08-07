@@ -1,7 +1,7 @@
-package com.scnsoft.permissions.persistence.repository;
+package com.scnsoft.permissions.persistence.repository.permission;
 
-import com.scnsoft.permissions.persistence.entity.AdditionalPermission;
-import com.scnsoft.permissions.persistence.entity.CompositePermissionId;
+import com.scnsoft.permissions.persistence.entity.permission.AdditionalPermission;
+import com.scnsoft.permissions.persistence.entity.permission.CompositePermissionId;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
