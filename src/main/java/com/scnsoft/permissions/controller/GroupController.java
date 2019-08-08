@@ -31,9 +31,11 @@ public class GroupController {
     public GroupDTO assignPermission(@RequestParam String userGroupName, @RequestParam String permissionName) {
         return groupService.assignPermission(userGroupName, permissionName).orElseThrow(RuntimeException::new);
     }
+
     @PreAuthorize("hasAnyAuthority('admin','moderator')")
     @PostMapping()
     public GroupDTO postGroup(@RequestBody GroupDTO groupDTO) {
-        return groupService.saveEntity(groupDTO).orElseThrow(RuntimeException::new);
+        groupService.saveEntity(groupDTO);
+        return groupService.findByName(groupDTO.getName()).orElseGet(() -> GroupDTO.builder().build());
     }
 }

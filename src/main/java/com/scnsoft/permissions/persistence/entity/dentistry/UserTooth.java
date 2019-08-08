@@ -30,5 +30,10 @@ public class UserTooth implements PersistenceEntity<Long> {
     @OneToMany(mappedBy = "userTooth",
             cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
-    private List<Treatment> list;
+    private List<Treatment> treatments;
+
+    @OneToMany(mappedBy = "userTooth",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY)
+    private List<Complaint> complaints;
 }

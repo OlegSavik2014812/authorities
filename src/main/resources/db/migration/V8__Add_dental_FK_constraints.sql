@@ -9,3 +9,7 @@ alter table user_teeth
 alter table user_teeth
     add constraint FK_userteeth_users
         foreign key (user_id) references users (id);
+
+alter table complaints
+    add constraint FK_complaints_user_teeth
+        foreign key (user_tooth_id) references user_teeth (id);

@@ -86,36 +86,31 @@ public class UserConverter implements EntityConverter<User, UserDTO> {
         if (entity == null) {
             return null;
         }
-        return userRepository.findById(entity.getId())
-                .orElseGet(() -> {
-                            User user = new User();
-                            Optional.ofNullable(entity.getId())
-                                    .ifPresent(user::setId);
-                            user.setLogin(entity.getLogin());
-                            user.setPassword(entity.getPassword());
-                            Group group = Optional.ofNullable(entity.getGroupName())
-                                    .flatMap(groupRepository::findUserGroupByName).orElseGet(Group::new);
+        User user = new User();
+        Optional.ofNullable(entity.getId())
+                .ifPresent(user::setId);
+        user.setLogin(entity.getLogin());
+        user.setPassword(entity.getPassword());
+        Group group = Optional.ofNullable(entity.getGroupName())
+                .flatMap(groupRepository::findUserGroupByName).orElseGet(Group::new);
 
-                            user.setGroup(group);
+        user.setGroup(group);
 
-                            List<String> groupPermissions = Optional.of(group)
-                                    .map(Group::getPermissions)
-                                    .orElse(Collections.emptyList())
-                                    .stream()
-                                    .map(Permission::getName)
-                                    .collect(Collectors.toList());
+        List<String> groupPermissions = Optional.of(group)
+                .map(Group::getPermissions)
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(Permission::getName)
+                .collect(Collectors.toList());
 
-                            if (user.getId() != null) {
-                                List<AdditionalPermission> list =
-                                        getAdditionalPermissions(groupPermissions, user, entity.getPermissions());
-                                user.setAdditionalPermissions(list);
-                            }
-                            return user;
-                        }
-                );
+        if (user.getId() != null) {
+            List<AdditionalPermission> list = getAdditionalPermissions(user, groupPermissions, entity.getPermissions());
+            user.setAdditionalPermissions(list);
+        }
+        return user;
     }
 
-    private List<AdditionalPermission> getAdditionalPermissions(List<String> groupPermissions, User user, List<String> allPermissions) {
+    private List<AdditionalPermission> getAdditionalPermissions(User user, List<String> groupPermissions, List<String> allPermissions) {
         List<AdditionalPermission> list = new ArrayList<>();
 
         Map<String, Boolean> map = new HashMap<>();

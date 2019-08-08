@@ -12,5 +12,7 @@ public class UserToothDTO implements EntityDTO {
     private Long userId;
     private String toothType;
     private Long toothNumber;
-    private List<TreatmentDTO> list;
+
+    private List<TreatmentDTO> treatments;
+    private List<ComplaintDTO> complaints;
 }

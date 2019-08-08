@@ -23,3 +23,12 @@ create table user_teeth
     primary key (id)
 );
 
+create table complaints
+(
+    id bigint not null auto_increment,
+    date datetime,
+    user_tooth_id bigint not null,
+    description varchar(255) not null,
+    primary key (id)
+);
+

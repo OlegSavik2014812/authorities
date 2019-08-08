@@ -21,7 +21,7 @@ insert into teeth ( type) values ('MOLAR');
 /*Left low teeth from 17 to 24*/
 insert into teeth ( type) values ('MOLAR');
 insert into teeth ( type) values ('MOLAR');
-insert into teeth ( type) valuesc ('MOLAR');
+insert into teeth ( type) values ('MOLAR');
 insert into teeth ( type) values ('PREMOLAR');
 insert into teeth ( type) values ('PREMOLAR');
 insert into teeth ( type) values ('CANINE');

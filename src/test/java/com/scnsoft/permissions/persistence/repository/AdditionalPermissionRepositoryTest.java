@@ -1,9 +1,11 @@
 package com.scnsoft.permissions.persistence.repository;
 
-import com.scnsoft.permissions.persistence.entity.AdditionalPermission;
-import com.scnsoft.permissions.persistence.entity.CompositePermissionId;
-import com.scnsoft.permissions.persistence.entity.Permission;
+import com.scnsoft.permissions.persistence.entity.permission.AdditionalPermission;
+import com.scnsoft.permissions.persistence.entity.permission.CompositePermissionId;
+import com.scnsoft.permissions.persistence.entity.permission.Permission;
 import com.scnsoft.permissions.persistence.entity.User;
+import com.scnsoft.permissions.persistence.repository.permission.AdditionalPermissionRepository;
+import com.scnsoft.permissions.persistence.repository.permission.PermissionRepository;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

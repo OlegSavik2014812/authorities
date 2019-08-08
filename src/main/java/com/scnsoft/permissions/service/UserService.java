@@ -2,13 +2,13 @@ package com.scnsoft.permissions.service;
 
 import com.scnsoft.permissions.converter.UserConverter;
 import com.scnsoft.permissions.dto.UserDTO;
+import com.scnsoft.permissions.persistence.entity.User;
 import com.scnsoft.permissions.persistence.entity.permission.AdditionalPermission;
 import com.scnsoft.permissions.persistence.entity.permission.CompositePermissionId;
 import com.scnsoft.permissions.persistence.entity.permission.Permission;
-import com.scnsoft.permissions.persistence.entity.User;
+import com.scnsoft.permissions.persistence.repository.UserRepository;
 import com.scnsoft.permissions.persistence.repository.permission.GroupRepository;
 import com.scnsoft.permissions.persistence.repository.permission.PermissionRepository;
-import com.scnsoft.permissions.persistence.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -37,13 +37,12 @@ public class UserService extends BaseCrudService<User, UserDTO, Long> {
         this.encoder = encoder;
     }
 
-    public Optional<UserDTO> save(UserDTO userDTO) {
-        return Optional.ofNullable(userDTO)
+    public void save(UserDTO userDTO) {
+        Optional.ofNullable(userDTO)
                 .filter(userDTO1 -> !userRepository.existsByLogin(userDTO1.getLogin()))
-                .map(userDTO1 -> {
+                .ifPresent(userDTO1 -> {
                     userDTO1.setPassword(encoder.encode(userDTO.getPassword()));
                     saveEntity(userDTO1);
-                    return userDTO1;
                 });
     }
 

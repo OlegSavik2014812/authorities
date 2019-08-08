@@ -6,13 +6,11 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.math.BigDecimal;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "treatments")
-public class Treatment extends BaseDentalRequest {
-    private BigDecimal cost;
+@Table(name = "complaints")
+public class Complaint extends BaseDentalRequest {
 }

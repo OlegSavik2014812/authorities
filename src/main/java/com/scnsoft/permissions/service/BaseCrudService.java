@@ -20,15 +20,14 @@ public abstract class BaseCrudService<T extends PersistenceEntity<R>, K extends 
     }
 
     @Override
-    public Optional<K> saveEntity(K entityDTO) {
-        return Optional.ofNullable(entityDTO)
+    public void saveEntity(K entityDTO) {
+        Optional.ofNullable(entityDTO)
                 .map(converter::toPersistence)
                 .filter(entity -> Optional.ofNullable(entity.getId())
                         .map(id -> !repository.existsById(id))
                         .orElse(true)
                 )
-                .map(repository::save)
-                .map(converter::toDTO);
+                .ifPresent(repository::save);
     }
 
     @Override
