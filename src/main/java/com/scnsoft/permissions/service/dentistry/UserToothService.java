@@ -1,10 +1,11 @@
-package com.scnsoft.permissions.service;
+package com.scnsoft.permissions.service.dentistry;
 
 import com.google.common.collect.Lists;
 import com.scnsoft.permissions.converter.UserToothConverter;
 import com.scnsoft.permissions.dto.UserToothDTO;
 import com.scnsoft.permissions.persistence.entity.dentistry.UserTooth;
 import com.scnsoft.permissions.persistence.repository.dentistry.UserToothRepository;
+import com.scnsoft.permissions.service.BaseCrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

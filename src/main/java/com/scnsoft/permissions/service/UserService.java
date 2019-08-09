@@ -41,9 +41,9 @@ public class UserService extends BaseCrudService<User, UserDTO, Long> {
         Optional.ofNullable(userDTO)
                 .filter(userDTO1 -> !userRepository.existsByLogin(userDTO1.getLogin()))
                 .ifPresent(userDTO1 -> {
-                    userDTO1.setPassword(encoder.encode(userDTO.getPassword()));
-                    saveEntity(userDTO1);
-                });
+            userDTO1.setPassword(encoder.encode(userDTO.getPassword()));
+            saveEntity(userDTO1);
+        });
     }
 
     public Optional<UserDTO> findByLogin(String name) {

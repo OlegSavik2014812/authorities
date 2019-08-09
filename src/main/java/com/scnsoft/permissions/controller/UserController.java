@@ -37,7 +37,8 @@ public class UserController {
 
     @GetMapping("user")
     public UserDTO getByLogin(@RequestParam(value = "name") String login) {
-        return userService.findByLogin(login).orElseThrow(RuntimeException::new);
+        UserDTO userDTO = userService.findByLogin(login).orElseThrow(RuntimeException::new);
+        return userDTO;
     }
 
     @GetMapping()
@@ -60,7 +61,7 @@ public class UserController {
     @PreAuthorize("hasAnyAuthority('admin','moderator')")
     @GetMapping(path = "assignGroup", params = {"login", "groupNames"})
     public UserDTO assignGroup(@RequestParam String login, @RequestParam String groupName) {
-        userService.assignGroup(login, groupName);
+        userService.assignGroup(login, groupName.toUpperCase());
         return userService.findByLogin(login).orElseThrow(RuntimeException::new);
     }
 
@@ -69,7 +70,7 @@ public class UserController {
     public UserDTO assignPermission(@RequestParam String login,
                                     @RequestParam String permissionName,
                                     @RequestParam boolean isEnabled) {
-        userService.assignAdditionalPermission(login, permissionName, isEnabled);
+        userService.assignAdditionalPermission(login, permissionName.toUpperCase(), isEnabled);
         return userService.findByLogin(login).orElseThrow(RuntimeException::new);
     }
 }

@@ -1,7 +1,7 @@
 package com.scnsoft.permissions.controller;
 
 import com.scnsoft.permissions.dto.UserToothDTO;
-import com.scnsoft.permissions.service.UserToothService;
+import com.scnsoft.permissions.service.dentistry.UserToothService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

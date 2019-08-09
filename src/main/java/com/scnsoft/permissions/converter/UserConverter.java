@@ -1,5 +1,6 @@
 package com.scnsoft.permissions.converter;
 
+import com.google.common.collect.Lists;
 import com.scnsoft.permissions.dto.UserDTO;
 import com.scnsoft.permissions.persistence.entity.User;
 import com.scnsoft.permissions.persistence.entity.permission.AdditionalPermission;
@@ -51,29 +52,26 @@ public class UserConverter implements EntityConverter<User, UserDTO> {
     }
 
     private List<String> getAvailableUserAuthorities(User user) {
-        Map<Permission, Boolean> collect = Optional.ofNullable(user.getAdditionalPermissions())
+        Map<String, Boolean> collect = Optional.ofNullable(user.getAdditionalPermissions())
                 .orElse(Collections.emptyList())
                 .stream()
-                .collect(Collectors.toMap(AdditionalPermission::getPermission, AdditionalPermission::isEnabled));
+                .collect(Collectors.toMap(additionalPermission -> additionalPermission.getPermission().getName(), AdditionalPermission::isEnabled));
 
-        Collection<Permission> permissions = Optional.ofNullable(user.getGroup())
+        List<String> groupPermissions = Optional.ofNullable(user.getGroup())
                 .map(Group::getPermissions)
-                .map(permissionList -> {
-                    permissionList.addAll(collect.keySet());
-                    return permissionList;
-                })
-                .filter(list -> !list.isEmpty())
-                .orElse(Collections.emptyList());
+                .map(permissionList -> Lists.transform(permissionList, Permission::getName))
+                .orElseGet(ArrayList::new);
+        Set<String> set = new HashSet<>();
+        set.addAll(collect.keySet());
+        set.addAll(groupPermissions);
 
-        return permissions
-                .stream()
+        return set.stream()
                 .filter(permission -> isPermissionSupported(permission, collect))
-                .map(Permission::getName)
-                .collect(Collectors.collectingAndThen(Collectors.toSet(), ArrayList::new));
+                .collect(Collectors.toList());
     }
 
-    private boolean isPermissionSupported(Permission permission, Map<Permission, Boolean> additionalPermissions) {
-        for (Map.Entry<Permission, Boolean> permissionEntry : additionalPermissions.entrySet()) {
+    private boolean isPermissionSupported(String permission, Map<String, Boolean> additionalPermissions) {
+        for (Map.Entry<String, Boolean> permissionEntry : additionalPermissions.entrySet()) {
             if (permissionEntry.getKey().equals(permission)) {
                 return permissionEntry.getValue();
             }
@@ -92,22 +90,23 @@ public class UserConverter implements EntityConverter<User, UserDTO> {
         user.setLogin(entity.getLogin());
         user.setPassword(entity.getPassword());
         Group group = Optional.ofNullable(entity.getGroupName())
-                .flatMap(groupRepository::findUserGroupByName).orElseGet(Group::new);
+                .flatMap(groupRepository::findUserGroupByName).orElse(null);
 
         user.setGroup(group);
 
-        List<String> groupPermissions = Optional.of(group)
+        List<String> groupPermissions = Optional.ofNullable(group)
                 .map(Group::getPermissions)
                 .orElse(Collections.emptyList())
                 .stream()
                 .map(Permission::getName)
                 .collect(Collectors.toList());
 
-        if (user.getId() != null) {
-            List<AdditionalPermission> list = getAdditionalPermissions(user, groupPermissions, entity.getPermissions());
+        User save = userRepository.save(user);
+        if (save.getId() != null) {
+            List<AdditionalPermission> list = getAdditionalPermissions(save, groupPermissions, entity.getPermissions());
             user.setAdditionalPermissions(list);
         }
-        return user;
+        return save;
     }
 
     private List<AdditionalPermission> getAdditionalPermissions(User user, List<String> groupPermissions, List<String> allPermissions) {

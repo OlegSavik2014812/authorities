@@ -9,6 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.Map;
 
 @Component
@@ -38,6 +39,7 @@ public class AuthenticationService {
     public Map<Object, Object> signUp(UserDTO userDTO) {
         String login = userDTO.getLogin();
         String password = userDTO.getPassword();
+        userDTO.setPermissions(Collections.singletonList("PATIENT"));
         userService.save(userDTO);
         return authenticate(login, password);
     }

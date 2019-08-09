@@ -1,9 +1,10 @@
-package com.scnsoft.permissions.service;
+package com.scnsoft.permissions.service.dentistry;
 
 import com.scnsoft.permissions.converter.TreatmentConverter;
 import com.scnsoft.permissions.dto.TreatmentDTO;
 import com.scnsoft.permissions.persistence.entity.dentistry.Treatment;
 import com.scnsoft.permissions.persistence.repository.dentistry.TreatmentRepository;
+import com.scnsoft.permissions.service.BaseCrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

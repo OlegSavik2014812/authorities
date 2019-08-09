@@ -1,17 +1,20 @@
 insert into permissions (name)
-values ('admin');
+values ('ADMIN');
 
 insert into permissions (name)
-values ('moderator');
+values ('PATIENT');
 
 insert into permissions (name)
-values ('owner');
+values ('MODERATOR');
+
+insert into permissions (name)
+values ('OWNER');
 
 insert into `groups` (name)
-values ('admin');
+values ('ADMIN');
 
 insert into `groups`(name)
-values ('owner');
+values ('OWNER');
 
 insert into users(login, password, group_id)
 VALUES ('Oleg', '$2a$10$19.TUjECs76KbXEhJE4awutW9EOnv8lbq9Ya3q7pkYKn7ppukSueq', 2);

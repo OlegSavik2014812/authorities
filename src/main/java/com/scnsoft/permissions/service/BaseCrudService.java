@@ -23,10 +23,6 @@ public abstract class BaseCrudService<T extends PersistenceEntity<R>, K extends 
     public void saveEntity(K entityDTO) {
         Optional.ofNullable(entityDTO)
                 .map(converter::toPersistence)
-                .filter(entity -> Optional.ofNullable(entity.getId())
-                        .map(id -> !repository.existsById(id))
-                        .orElse(true)
-                )
                 .ifPresent(repository::save);
     }
 
@@ -43,7 +39,7 @@ public abstract class BaseCrudService<T extends PersistenceEntity<R>, K extends 
                 .ifPresent(repository::deleteById);
     }
 
-    Stream<K> entities() {
+    protected Stream<K> entities() {
         return StreamSupport
                 .stream(repository.findAll().spliterator(), false)
                 .map(converter::toDTO);
