@@ -1,6 +1,5 @@
 package com.scnsoft.permissions.converter;
 
-import com.google.common.collect.Lists;
 import com.scnsoft.permissions.dto.UserDTO;
 import com.scnsoft.permissions.persistence.entity.User;
 import com.scnsoft.permissions.persistence.entity.permission.AdditionalPermission;
@@ -58,11 +57,11 @@ public class UserConverter implements EntityConverter<User, UserDTO> {
         Map<String, Boolean> additionalPermissionsNames = new HashMap<>();
         additionalPermissions.forEach(permission ->
                 additionalPermissionsNames.put(permission.getPermission().getName(), permission.isEnabled()));
-        Collection<String> collect = Lists.transform(groupPermissions, Permission::getName);
 
-        Set<String> set = new HashSet<>(collect);
-        set.addAll(additionalPermissionsNames.keySet());
-        return set.stream()
+        List<String> list = groupPermissions.stream().map(Permission::getName).collect(Collectors.toList());
+
+        list.addAll(additionalPermissionsNames.keySet());
+        return list.stream()
                 .filter(permission -> additionalPermissionsNames.getOrDefault(permission, true))
                 .collect(Collectors.toList());
     }

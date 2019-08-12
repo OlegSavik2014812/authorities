@@ -1,9 +1,12 @@
 package com.scnsoft.permissions.converter;
 
 import com.google.common.collect.Lists;
+import com.scnsoft.permissions.dto.BaseDentalRequestDTO;
 import com.scnsoft.permissions.dto.ComplaintDTO;
 import com.scnsoft.permissions.dto.TreatmentDTO;
 import com.scnsoft.permissions.dto.UserToothDTO;
+import com.scnsoft.permissions.persistence.entity.dentistry.BaseDentalRequest;
+import com.scnsoft.permissions.persistence.entity.dentistry.Tooth;
 import com.scnsoft.permissions.persistence.entity.dentistry.UserTooth;
 import com.scnsoft.permissions.persistence.repository.UserRepository;
 import com.scnsoft.permissions.persistence.repository.dentistry.ComplaintRepository;
@@ -12,9 +15,11 @@ import com.scnsoft.permissions.persistence.repository.dentistry.TreatmentReposit
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -44,18 +49,15 @@ public class UserToothConverter implements EntityConverter<UserTooth, UserToothD
 
     @Override
     public UserToothDTO toDTO(UserTooth entity) {
-        List<TreatmentDTO> treatments = entity.getTreatments().stream()
-                .map(treatmentConverter::toDTO)
-                .collect(Collectors.toList());
+        List<TreatmentDTO> treatments = convert(entity::getTreatments, treatmentConverter::toDTO);
+        List<ComplaintDTO> complaints = convert(entity::getComplaints, complaintConverter::toDTO);
 
-        List<ComplaintDTO> complaints = entity.getComplaints().stream()
-                .map(complaintConverter::toDTO)
-                .collect(Collectors.toList());
+        Tooth tooth = entity.getTooth();
 
         return UserToothDTO.builder()
                 .id(entity.getId())
-                .toothNumber(entity.getTooth().getId())
-                .toothType(entity.getTooth().getType().toString())
+                .toothNumber(tooth.getId())
+                .toothType(tooth.getType().toString())
                 .treatments(treatments)
                 .complaints(complaints)
                 .userId(entity.getUser().getId())
@@ -80,7 +82,14 @@ public class UserToothConverter implements EntityConverter<UserTooth, UserToothD
         return userTooth;
     }
 
-    private static <T> void setUpList(Supplier<Iterable<T>> supplier, Consumer<List<T>> consumer) {
+    private <T extends BaseDentalRequestDTO, K extends BaseDentalRequest> List<T> convert(Supplier<List<K>> supplier, Function<K, T> converter) {
+        return supplier.get()
+                .stream()
+                .map(converter)
+                .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
+    }
+
+    private <T> void setUpList(Supplier<Iterable<T>> supplier, Consumer<List<T>> consumer) {
         Iterable<T> elements = supplier.get();
         consumer.accept(Lists.newArrayList(elements));
     }
