@@ -15,8 +15,7 @@ public class ComplaintConverter extends BaseDentalRequestConverter<Complaint, Co
 
     @Override
     public ComplaintDTO toDTO(Complaint entity) {
-        ComplaintDTO dto = new ComplaintDTO();
-        return initDTO(entity, dto);
+        return initDTO(entity, new ComplaintDTO());
     }
 
     @Override

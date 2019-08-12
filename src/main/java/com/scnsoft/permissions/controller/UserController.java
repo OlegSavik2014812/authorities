@@ -37,8 +37,7 @@ public class UserController {
 
     @GetMapping("user")
     public UserDTO getByLogin(@RequestParam(value = "name") String login) {
-        UserDTO userDTO = userService.findByLogin(login).orElseThrow(RuntimeException::new);
-        return userDTO;
+        return userService.findByLogin(login).orElseThrow(RuntimeException::new);
     }
 
     @GetMapping()

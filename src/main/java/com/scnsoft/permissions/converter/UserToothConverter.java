@@ -28,7 +28,12 @@ public class UserToothConverter implements EntityConverter<UserTooth, UserToothD
     private final UserRepository userRepository;
 
     @Autowired
-    public UserToothConverter(ComplaintConverter complaintConverter, TreatmentConverter treatmentConverter, ToothRepository toothRepository, TreatmentRepository treatmentRepository, UserRepository userRepository, ComplaintRepository complaintRepository) {
+    public UserToothConverter(ComplaintConverter complaintConverter,
+                              TreatmentConverter treatmentConverter,
+                              ToothRepository toothRepository,
+                              TreatmentRepository treatmentRepository,
+                              ComplaintRepository complaintRepository,
+                              UserRepository userRepository) {
         this.complaintConverter = complaintConverter;
         this.treatmentConverter = treatmentConverter;
         this.toothRepository = toothRepository;
@@ -77,7 +82,6 @@ public class UserToothConverter implements EntityConverter<UserTooth, UserToothD
 
     private static <T> void setUpList(Supplier<Iterable<T>> supplier, Consumer<List<T>> consumer) {
         Iterable<T> elements = supplier.get();
-
         consumer.accept(Lists.newArrayList(elements));
     }
 }
