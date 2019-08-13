@@ -27,12 +27,12 @@ public class GroupService extends BaseCrudService<Group, GroupDTO, Long> {
     }
 
     public Optional<GroupDTO> findByName(String userGroupName) {
-        return groupRepository.findUserGroupByName(userGroupName)
+        return groupRepository.findGroupByName(userGroupName)
                 .map(groupConverter::toDTO);
     }
 
     public Optional<GroupDTO> assignPermission(String userGroupName, String permissionByName) {
-        return groupRepository.findUserGroupByName(userGroupName)
+        return groupRepository.findGroupByName(userGroupName)
                 .map(userGroup1 -> {
                     permissionRepository.findPermissionByName(permissionByName)
                             .ifPresent(permission -> userGroup1.getPermissions().add(permission));

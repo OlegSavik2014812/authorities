@@ -49,8 +49,8 @@ public class UserToothConverter implements EntityConverter<UserTooth, UserToothD
 
     @Override
     public UserToothDTO toDTO(UserTooth entity) {
-        List<TreatmentDTO> treatments = convert(entity::getTreatments, treatmentConverter::toDTO);
-        List<ComplaintDTO> complaints = convert(entity::getComplaints, complaintConverter::toDTO);
+        List<TreatmentDTO> treatments = dentalRequestToDto(entity::getTreatments, treatmentConverter::toDTO);
+        List<ComplaintDTO> complaints = dentalRequestToDto(entity::getComplaints, complaintConverter::toDTO);
 
         Tooth tooth = entity.getTooth();
 
@@ -82,7 +82,7 @@ public class UserToothConverter implements EntityConverter<UserTooth, UserToothD
         return userTooth;
     }
 
-    private <T extends BaseDentalRequestDTO, K extends BaseDentalRequest> List<T> convert(Supplier<List<K>> supplier, Function<K, T> converter) {
+    private <T extends BaseDentalRequestDTO, K extends BaseDentalRequest> List<T> dentalRequestToDto(Supplier<List<K>> supplier, Function<K, T> converter) {
         return supplier.get()
                 .stream()
                 .map(converter)

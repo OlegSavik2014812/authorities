@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Component
 public class UserConverter implements EntityConverter<User, UserDTO> {
@@ -74,21 +75,25 @@ public class UserConverter implements EntityConverter<User, UserDTO> {
         User user = new User();
         Optional.ofNullable(entity.getId())
                 .ifPresent(user::setId);
-        user.setLogin(entity.getLogin());
-        user.setPassword(entity.getPassword());
+
+        user.setLogin(Objects.requireNonNull(entity.getLogin()));
+        user.setPassword(Objects.requireNonNull(entity.getPassword()));
 
         Optional<Group> optionalGroup = Optional.ofNullable(entity.getGroupName())
                 .filter(Strings::isNotBlank)
-                .flatMap(groupRepository::findUserGroupByName);
+                .flatMap(groupRepository::findGroupByName);
 
         optionalGroup.ifPresent(user::setGroup);
 
-        List<String> groupPermissions = optionalGroup
+        List<Permission> permissions = optionalGroup
                 .map(Group::getPermissions)
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(Permission::getName)
-                .collect(Collectors.toList());
+                .filter(list -> !list.isEmpty())
+                .orElse(Collections.emptyList());
+
+        List<String> groupPermissions = !permissions.isEmpty() ?
+                permissions.stream()
+                        .map(Permission::getName)
+                        .collect(Collectors.toList()) : Collections.emptyList();
 
         User savedUser = userRepository.save(user);
 
@@ -101,6 +106,7 @@ public class UserConverter implements EntityConverter<User, UserDTO> {
 
     private List<AdditionalPermission> extractAdditionalPermissions(User user, List<String> groupPermissions, List<String> allPermissions) {
         Map<String, Boolean> permissionMap = new HashMap<>();
+
         allPermissions.forEach(permission -> permissionMap.put(permission, true));
 
         groupPermissions.forEach(permission -> {
@@ -109,18 +115,18 @@ public class UserConverter implements EntityConverter<User, UserDTO> {
             }
         });
 
-        List<AdditionalPermission> list = new ArrayList<>();
-
-        permissionRepository.findPermissionsByNames(permissionMap.keySet())
-                .forEach(permission -> {
-                    AdditionalPermission additionalPermission = AdditionalPermission.builder()
-                            .id(new CompositePermissionId(user.getId(), permission.getId()))
-                            .user(user)
-                            .permission(permission)
-                            .isEnabled(permissionMap.get(permission.getName()))
-                            .build();
-                    list.add(additionalPermission);
-                });
-        return list;
+        if (permissionMap.isEmpty()) {
+            return Collections.emptyList();
+        }
+        Long userId = user.getId();
+        return StreamSupport
+                .stream(permissionRepository.findPermissionsByNames(permissionMap.keySet()).spliterator(), false)
+                .map(permission -> AdditionalPermission.builder()
+                        .id(new CompositePermissionId(userId, permission.getId()))
+                        .user(user)
+                        .permission(permission)
+                        .isEnabled(permissionMap.getOrDefault(permission.getName(), false))
+                        .build())
+                .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
     }
 }
