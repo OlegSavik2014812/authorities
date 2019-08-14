@@ -27,8 +27,8 @@ public class UserToothService extends BaseCrudService<UserTooth, UserToothDTO, L
         this.userToothConverter = userToothConverter;
     }
 
-    public List<UserToothDTO> getUserTeeth(Long id) {
-        return Optional.ofNullable(id)
+    public List<UserToothDTO> getUserTeeth(Long userId) {
+        return Optional.ofNullable(userId)
                 .map(userToothRepository::findAllByUserId)
                 .map(Lists::newArrayList)
                 .map(Collections::unmodifiableList)
@@ -36,6 +36,10 @@ public class UserToothService extends BaseCrudService<UserTooth, UserToothDTO, L
                 .stream()
                 .map(userToothConverter::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    public void save(UserToothDTO userToothDTO) {
+        saveEntity(userToothDTO);
     }
 
     @Override

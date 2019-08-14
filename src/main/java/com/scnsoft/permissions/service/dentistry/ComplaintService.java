@@ -4,17 +4,38 @@ import com.scnsoft.permissions.converter.ComplaintConverter;
 import com.scnsoft.permissions.dto.ComplaintDTO;
 import com.scnsoft.permissions.persistence.entity.dentistry.Complaint;
 import com.scnsoft.permissions.persistence.repository.dentistry.ComplaintRepository;
+import com.scnsoft.permissions.persistence.repository.dentistry.UserToothRepository;
 import com.scnsoft.permissions.service.BaseCrudService;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import static java.time.LocalDate.now;
+
 @Service
 public class ComplaintService extends BaseCrudService<Complaint, ComplaintDTO, Long> {
 
-    public ComplaintService(ComplaintRepository repository, ComplaintConverter converter) {
+    private final UserToothRepository userToothRepository;
+    private final ComplaintRepository complaintRepository;
+
+    public ComplaintService(ComplaintRepository repository, ComplaintConverter converter, UserToothRepository userToothRepository) {
         super(repository, converter);
+        this.complaintRepository = repository;
+        this.userToothRepository = userToothRepository;
+    }
+
+    public void complain(Long userTootId, String problem) {
+        userToothRepository.findById(userTootId)
+                .ifPresent(tooth ->
+                        complaintRepository.save(Complaint
+                                .complain()
+                                .on(tooth)
+                                .describe(problem)
+                                .when(now())
+                                .build()
+                        )
+                );
     }
 
     @Override

@@ -27,7 +27,8 @@ public class GroupService extends BaseCrudService<Group, GroupDTO, Long> {
     }
 
     public Optional<GroupDTO> findByName(String userGroupName) {
-        return groupRepository.findGroupByName(userGroupName)
+        return groupRepository
+                .findGroupByName(userGroupName)
                 .map(groupConverter::toDTO);
     }
 

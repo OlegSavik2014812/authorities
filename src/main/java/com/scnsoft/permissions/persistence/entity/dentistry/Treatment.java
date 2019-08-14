@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -15,4 +16,37 @@ import java.math.BigDecimal;
 @Table(name = "treatments")
 public class Treatment extends BaseDentalRequest {
     private BigDecimal cost;
+
+    public static Builder treat() {
+        return new Treatment().new Builder();
+    }
+
+    public class Builder {
+        private Builder() {
+        }
+
+        public Builder what(UserTooth userTooth) {
+            Treatment.super.setUserTooth(userTooth);
+            return this;
+        }
+
+        public Builder when(LocalDate localDate) {
+            Treatment.super.setDate(localDate);
+            return this;
+        }
+
+        public Builder describe(String description) {
+            Treatment.super.setDescription(description);
+            return this;
+        }
+
+        public Builder estimate(BigDecimal cost) {
+            Treatment.this.cost = cost;
+            return this;
+        }
+
+        public Treatment build() {
+            return Treatment.this;
+        }
+    }
 }

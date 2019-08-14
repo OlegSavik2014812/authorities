@@ -9,6 +9,7 @@ import com.scnsoft.permissions.persistence.entity.permission.Permission;
 import com.scnsoft.permissions.persistence.repository.UserRepository;
 import com.scnsoft.permissions.persistence.repository.permission.GroupRepository;
 import com.scnsoft.permissions.persistence.repository.permission.PermissionRepository;
+import com.scnsoft.permissions.service.dentistry.ComplaintService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,19 +23,20 @@ public class UserService extends BaseCrudService<User, UserDTO, Long> {
     private final GroupRepository groupRepository;
     private final UserConverter converter;
     private final PermissionRepository permissionRepository;
-
+    private final ComplaintService complaintService;
     private final BCryptPasswordEncoder encoder;
 
     public UserService(UserRepository userRepository,
                        GroupRepository groupRepository,
                        UserConverter converter,
-                       PermissionRepository permissionRepository, BCryptPasswordEncoder encoder) {
+                       PermissionRepository permissionRepository, BCryptPasswordEncoder encoder, ComplaintService complaintService) {
         super(userRepository, converter);
         this.userRepository = userRepository;
         this.groupRepository = groupRepository;
         this.converter = converter;
         this.permissionRepository = permissionRepository;
         this.encoder = encoder;
+        this.complaintService = complaintService;
     }
 
     public void save(UserDTO userDTO) {
@@ -53,32 +55,37 @@ public class UserService extends BaseCrudService<User, UserDTO, Long> {
 
     public void assignGroup(String login, String userGroupName) {
         userRepository.findUserByLogin(login)
-                .ifPresent(user1 -> {
+                .ifPresent(user -> {
                     groupRepository.findGroupByName(userGroupName)
-                            .ifPresent(user1::setGroup);
-                    userRepository.save(user1);
+                            .ifPresent(user::setGroup);
+                    userRepository.save(user);
                 });
     }
 
     public void assignAdditionalPermission(String login, String permissionName, boolean isEnabled) {
-        User user = userRepository.findUserByLogin(login).orElseThrow(RuntimeException::new);
-        Permission permission = permissionRepository.findPermissionByName(permissionName)
-                .orElseGet(() -> {
-                    Permission newPermission = new Permission();
-                    newPermission.setName(permissionName);
-                    permissionRepository.save(newPermission);
-                    return permissionRepository.findPermissionByName(permissionName)
-                            .orElseThrow(RuntimeException::new);
+        userRepository.findUserByLogin(login)
+                .ifPresent(user -> {
+                    Permission permission = getPersistedPermission(permissionName);
+                    user.getAdditionalPermissions()
+                            .add(AdditionalPermission.builder()
+                                    .id(new CompositePermissionId(user.getId(), permission.getId()))
+                                    .user(user)
+                                    .permission(permission)
+                                    .isEnabled(isEnabled)
+                                    .build()
+                            );
+                    userRepository.save(user);
                 });
-        user.getAdditionalPermissions()
-                .add(AdditionalPermission.builder()
-                        .id(new CompositePermissionId(user.getId(), permission.getId()))
-                        .user(user)
-                        .permission(permission)
-                        .isEnabled(isEnabled)
-                        .build()
+    }
+
+    private Permission getPersistedPermission(String permissionName) {
+        return permissionRepository.findPermissionByName(permissionName)
+                .orElseGet(() -> {
+                            Permission newPermission = new Permission();
+                            newPermission.setName(permissionName);
+                            return permissionRepository.save(newPermission);
+                        }
                 );
-        userRepository.save(user);
     }
 
     @Override

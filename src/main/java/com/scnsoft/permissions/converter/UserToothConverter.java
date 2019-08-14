@@ -5,6 +5,7 @@ import com.scnsoft.permissions.dto.BaseDentalRequestDTO;
 import com.scnsoft.permissions.dto.ComplaintDTO;
 import com.scnsoft.permissions.dto.TreatmentDTO;
 import com.scnsoft.permissions.dto.UserToothDTO;
+import com.scnsoft.permissions.persistence.entity.User;
 import com.scnsoft.permissions.persistence.entity.dentistry.BaseDentalRequest;
 import com.scnsoft.permissions.persistence.entity.dentistry.Tooth;
 import com.scnsoft.permissions.persistence.entity.dentistry.UserTooth;
@@ -12,6 +13,8 @@ import com.scnsoft.permissions.persistence.repository.UserRepository;
 import com.scnsoft.permissions.persistence.repository.dentistry.ComplaintRepository;
 import com.scnsoft.permissions.persistence.repository.dentistry.ToothRepository;
 import com.scnsoft.permissions.persistence.repository.dentistry.TreatmentRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +28,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class UserToothConverter implements EntityConverter<UserTooth, UserToothDTO> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserToothConverter.class);
     private final TreatmentConverter treatmentConverter;
     private final TreatmentRepository treatmentRepository;
     private final ComplaintConverter complaintConverter;
@@ -66,20 +70,31 @@ public class UserToothConverter implements EntityConverter<UserTooth, UserToothD
 
     @Override
     public UserTooth toPersistence(UserToothDTO entity) {
-        if (entity == null) return null;
         UserTooth userTooth = new UserTooth();
-        Optional<Long> optionalId = Optional.ofNullable(entity.getId());
 
-        toothRepository.findById(entity.getToothNumber())
-                .ifPresent(userTooth::setTooth);
+        Optional<Tooth> optionalTooth = toothRepository.findById(entity.getToothNumber());
+        Optional<User> optionalUser = Optional.ofNullable(entity.getUserId())
+                .flatMap(id1 -> {
+                    LOGGER.error("dfjksdlb");
+                    return userRepository.findById(id1);
+                });
+        if (!optionalTooth.isPresent() || !optionalUser.isPresent()) {
+            return null;
+        }
+        Tooth tooth = optionalTooth.get();
+        User user = optionalUser.get();
+        Long id = Optional.ofNullable(entity.getId()).orElseGet(() -> generateUserToothId(tooth.getId(), user.getId()));
 
-        optionalId.ifPresent(id -> {
-            userTooth.setId(id);
-            setUpList(() -> treatmentRepository.findAllByUserToothId(id), userTooth::setTreatments);
-            setUpList(() -> complaintRepository.findAllByUserToothId(id), userTooth::setComplaints);
-        });
-        optionalId.flatMap(userRepository::findById).ifPresent(userTooth::setUser);
+        userTooth.setId(id);
+
+        setUpList(() -> treatmentRepository.findAllByUserToothId(id), userTooth::setTreatments);
+        setUpList(() -> complaintRepository.findAllByUserToothId(id), userTooth::setComplaints);
         return userTooth;
+    }
+
+    private Long generateUserToothId(Long userId, Long userToothId) {
+        String stringId = userId + "" + userToothId;
+        return Long.parseLong(stringId);
     }
 
     private <T extends BaseDentalRequestDTO, K extends BaseDentalRequest> List<T> dentalRequestToDto(Supplier<List<K>> supplier, Function<K, T> converter) {

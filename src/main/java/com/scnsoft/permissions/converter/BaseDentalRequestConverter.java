@@ -30,9 +30,6 @@ public abstract class BaseDentalRequestConverter<T extends BaseDentalRequest, K 
     }
 
     T initPersistence(K dto, T persistence) {
-        if (dto == null) {
-            return null;
-        }
         Optional.ofNullable(dto.getId())
                 .ifPresent(persistence::setId);
         persistence.setDate(dto.getDate());

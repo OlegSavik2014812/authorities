@@ -27,9 +27,6 @@ public class GroupConverter implements EntityConverter<Group, GroupDTO> {
 
     @Override
     public GroupDTO toDTO(Group entity) {
-        if (entity == null) {
-            return null;
-        }
         return GroupDTO.builder()
                 .id(entity.getId())
                 .name(entity.getName())
@@ -40,9 +37,6 @@ public class GroupConverter implements EntityConverter<Group, GroupDTO> {
 
     @Override
     public Group toPersistence(GroupDTO entity) {
-        if (entity == null) {
-            return null;
-        }
         Group group = new Group();
 
         Optional.ofNullable(entity.getId())

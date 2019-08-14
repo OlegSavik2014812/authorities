@@ -3,7 +3,6 @@ package com.scnsoft.permissions.converter;
 import com.scnsoft.permissions.dto.UserDTO;
 import com.scnsoft.permissions.persistence.entity.User;
 import com.scnsoft.permissions.persistence.entity.permission.AdditionalPermission;
-import com.scnsoft.permissions.persistence.entity.permission.CompositePermissionId;
 import com.scnsoft.permissions.persistence.entity.permission.Group;
 import com.scnsoft.permissions.persistence.entity.permission.Permission;
 import com.scnsoft.permissions.persistence.repository.UserRepository;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Component
 public class UserConverter implements EntityConverter<User, UserDTO> {
@@ -31,9 +29,6 @@ public class UserConverter implements EntityConverter<User, UserDTO> {
 
     @Override
     public UserDTO toDTO(User entity) {
-        if (entity == null) {
-            return null;
-        }
         String groupName = Optional.ofNullable(entity.getGroup())
                 .map(Group::getName).orElse(EMPTY);
 
@@ -69,9 +64,6 @@ public class UserConverter implements EntityConverter<User, UserDTO> {
 
     @Override
     public User toPersistence(UserDTO entity) {
-        if (entity == null) {
-            return null;
-        }
         User user = new User();
         Optional.ofNullable(entity.getId())
                 .ifPresent(user::setId);
@@ -84,49 +76,6 @@ public class UserConverter implements EntityConverter<User, UserDTO> {
                 .flatMap(groupRepository::findGroupByName);
 
         optionalGroup.ifPresent(user::setGroup);
-
-        List<Permission> permissions = optionalGroup
-                .map(Group::getPermissions)
-                .filter(list -> !list.isEmpty())
-                .orElse(Collections.emptyList());
-
-        List<String> groupPermissions = !permissions.isEmpty() ?
-                permissions.stream()
-                        .map(Permission::getName)
-                        .collect(Collectors.toList()) : Collections.emptyList();
-
-        User savedUser = userRepository.save(user);
-
-        if (savedUser.getId() != null) {
-            List<AdditionalPermission> list = extractAdditionalPermissions(savedUser, groupPermissions, entity.getPermissions());
-            user.setAdditionalPermissions(list);
-        }
-        return savedUser;
-    }
-
-    private List<AdditionalPermission> extractAdditionalPermissions(User user, List<String> groupPermissions, List<String> allPermissions) {
-        Map<String, Boolean> permissionMap = new HashMap<>();
-
-        allPermissions.forEach(permission -> permissionMap.put(permission, true));
-
-        groupPermissions.forEach(permission -> {
-            if (permissionMap.remove(permission) == null) {
-                permissionMap.put(permission, false);
-            }
-        });
-
-        if (permissionMap.isEmpty()) {
-            return Collections.emptyList();
-        }
-        Long userId = user.getId();
-        return StreamSupport
-                .stream(permissionRepository.findPermissionsByNames(permissionMap.keySet()).spliterator(), false)
-                .map(permission -> AdditionalPermission.builder()
-                        .id(new CompositePermissionId(userId, permission.getId()))
-                        .user(user)
-                        .permission(permission)
-                        .isEnabled(permissionMap.getOrDefault(permission.getName(), false))
-                        .build())
-                .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
+        return user;
     }
 }
