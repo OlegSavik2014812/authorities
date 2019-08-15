@@ -38,8 +38,12 @@ public class UserToothService extends BaseCrudService<UserTooth, UserToothDTO, L
                 .collect(Collectors.toList());
     }
 
-    public void save(UserToothDTO userToothDTO) {
-        saveEntity(userToothDTO);
+    public Long save(UserToothDTO userToothDTO) {
+        return Optional.ofNullable(userToothDTO)
+                .map(userToothConverter::toPersistence)
+                .map(userToothRepository::save)
+                .orElseThrow(RuntimeException::new).getId()
+        ;
     }
 
     @Override

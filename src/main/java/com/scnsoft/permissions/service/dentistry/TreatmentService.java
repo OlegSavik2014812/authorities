@@ -28,21 +28,20 @@ public class TreatmentService extends BaseCrudService<Treatment, TreatmentDTO, L
         this.userToothRepository = userToothRepository;
     }
 
-    public void treat(Long userTootId, TreatmentDTO treatmentDTO) {
-        userToothRepository.findById(userTootId)
-                .ifPresent(userTooth -> {
-                            LocalDate date = Optional.ofNullable(treatmentDTO.getDate())
-                                    .orElseGet(LocalDate::now);
-                            String operationDescription = treatmentDTO.getDescription();
-                            BigDecimal cost = treatmentDTO.getCost();
-                            treatmentRepository.save(
-                                    Treatment.treat()
-                                            .what(userTooth)
-                                            .when(date)
-                                            .describe(operationDescription)
-                                            .estimate(cost)
-                                            .build());
-                        }
+    public void treat(TreatmentDTO treatmentDTO) {
+        Long userToothId = treatmentDTO.getUserToothId();
+        LocalDate date = Optional.ofNullable(treatmentDTO.getDate()).orElseGet(LocalDate::now);
+        String operationDescription = treatmentDTO.getDescription();
+        BigDecimal cost = treatmentDTO.getCost();
+
+        userToothRepository.findById(userToothId)
+                .ifPresent(userTooth -> treatmentRepository.save(
+                        Treatment.treat()
+                                .what(userTooth)
+                                .when(date)
+                                .describe(operationDescription)
+                                .estimate(cost)
+                                .build())
                 );
     }
 

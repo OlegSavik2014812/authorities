@@ -5,6 +5,7 @@ import com.scnsoft.permissions.persistence.entity.dentistry.BaseDentalRequest;
 import com.scnsoft.permissions.persistence.entity.dentistry.UserTooth;
 import com.scnsoft.permissions.persistence.repository.dentistry.UserToothRepository;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 public abstract class BaseDentalRequestConverter<T extends BaseDentalRequest, K extends BaseDentalRequestDTO>
@@ -32,7 +33,8 @@ public abstract class BaseDentalRequestConverter<T extends BaseDentalRequest, K 
     T initPersistence(K dto, T persistence) {
         Optional.ofNullable(dto.getId())
                 .ifPresent(persistence::setId);
-        persistence.setDate(dto.getDate());
+        LocalDate localDate = Optional.ofNullable(dto.getDate()).orElseGet(LocalDate::now);
+        persistence.setDate(localDate);
         userToothRepository.findById(dto.getUserToothId())
                 .ifPresent(persistence::setUserTooth);
         persistence.setDescription(dto.getDescription());

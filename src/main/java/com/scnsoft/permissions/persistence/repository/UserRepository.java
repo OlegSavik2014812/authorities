@@ -15,6 +15,6 @@ public interface UserRepository extends CrudRepository<User, Long> {
 
     boolean existsByLogin(@Param("login") String login);
     @Query("select user from User user where login in :logins")
-    Iterable<User> findUsersByByNames(@Param("logins") Iterable<String> loginList);
+    Iterable<User> findUsersByNames(@Param("logins") Iterable<String> loginList);
 
 }

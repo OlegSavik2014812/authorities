@@ -8,10 +8,10 @@ import com.scnsoft.permissions.persistence.repository.dentistry.UserToothReposit
 import com.scnsoft.permissions.service.BaseCrudService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static java.time.LocalDate.now;
 
 @Service
 public class ComplaintService extends BaseCrudService<Complaint, ComplaintDTO, Long> {
@@ -25,14 +25,19 @@ public class ComplaintService extends BaseCrudService<Complaint, ComplaintDTO, L
         this.userToothRepository = userToothRepository;
     }
 
-    public void complain(Long userTootId, String problem) {
-        userToothRepository.findById(userTootId)
+    public void complain(ComplaintDTO complaintDTO) {
+
+        Long userToothId = complaintDTO.getUserToothId();
+        LocalDate date = Optional.ofNullable(complaintDTO.getDate()).orElseGet(LocalDate::now);
+        String problem = complaintDTO.getDescription();
+
+        userToothRepository.findById(userToothId)
                 .ifPresent(tooth ->
                         complaintRepository.save(Complaint
                                 .complain()
                                 .on(tooth)
                                 .describe(problem)
-                                .when(now())
+                                .when(date)
                                 .build()
                         )
                 );

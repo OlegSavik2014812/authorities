@@ -52,7 +52,7 @@ public class GroupConverter implements EntityConverter<Group, GroupDTO> {
 
         Optional.ofNullable(entity.getUserNames())
                 .filter(isNotEmpty)
-                .ifPresent(names -> setUpList(() -> userRepository.findUsersByByNames(names), group::setUsers));
+                .ifPresent(names -> setUpList(() -> userRepository.findUsersByNames(names), group::setUsers));
 
         return group;
     }
