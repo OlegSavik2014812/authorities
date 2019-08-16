@@ -15,7 +15,7 @@ import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController(value = "user_teeth")
-@RequestMapping("teeth")
+@RequestMapping("user_teeth")
 public class UserToothController {
     private final UserToothService userToothService;
     private final ComplaintService complaintService;

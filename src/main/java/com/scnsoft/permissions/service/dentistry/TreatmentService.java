@@ -44,7 +44,6 @@ public class TreatmentService extends BaseCrudService<Treatment, TreatmentDTO, L
                                 .build())
                 );
     }
-
     @Override
     public Collection<TreatmentDTO> findAll() {
         return entities().collect(Collectors.toList());

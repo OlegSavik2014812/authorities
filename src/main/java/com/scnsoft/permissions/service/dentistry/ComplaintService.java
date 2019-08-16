@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -26,11 +27,12 @@ public class ComplaintService extends BaseCrudService<Complaint, ComplaintDTO, L
     }
 
     public void complain(ComplaintDTO complaintDTO) {
-
+        String problem = complaintDTO.getDescription();
+        if (Objects.isNull(problem) || problem.trim().isEmpty()) {
+            return;
+        }
         Long userToothId = complaintDTO.getUserToothId();
         LocalDate date = Optional.ofNullable(complaintDTO.getDate()).orElseGet(LocalDate::now);
-        String problem = complaintDTO.getDescription();
-
         userToothRepository.findById(userToothId)
                 .ifPresent(tooth ->
                         complaintRepository.save(Complaint
@@ -38,8 +40,7 @@ public class ComplaintService extends BaseCrudService<Complaint, ComplaintDTO, L
                                 .on(tooth)
                                 .describe(problem)
                                 .when(date)
-                                .build()
-                        )
+                                .build())
                 );
     }
 

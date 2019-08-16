@@ -12,10 +12,6 @@ import java.util.Optional;
 public interface PermissionRepository extends CrudRepository<Permission, Long> {
     Optional<Permission> findPermissionByName(@Param("name") String name);
 
-    void deletePermissionByName(@Param("name") String name);
-
-    boolean existsByName(@Param("name") String name);
-
     @Query("select permission from Permission permission where name in :names")
     Iterable<Permission> findPermissionsByNames(@Param("names") Iterable<String> strings);
 }

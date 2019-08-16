@@ -5,9 +5,7 @@ import com.scnsoft.permissions.persistence.entity.User;
 import com.scnsoft.permissions.persistence.entity.permission.AdditionalPermission;
 import com.scnsoft.permissions.persistence.entity.permission.Group;
 import com.scnsoft.permissions.persistence.entity.permission.Permission;
-import com.scnsoft.permissions.persistence.repository.UserRepository;
 import com.scnsoft.permissions.persistence.repository.permission.GroupRepository;
-import com.scnsoft.permissions.persistence.repository.permission.PermissionRepository;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Component;
 
@@ -18,13 +16,9 @@ import java.util.stream.Collectors;
 public class UserConverter implements EntityConverter<User, UserDTO> {
     private static final String EMPTY = "";
     private final GroupRepository groupRepository;
-    private final PermissionRepository permissionRepository;
-    private final UserRepository userRepository;
 
-    public UserConverter(GroupRepository repository, PermissionRepository permissionRepository, UserRepository userRepository) {
+    public UserConverter(GroupRepository repository) {
         this.groupRepository = repository;
-        this.permissionRepository = permissionRepository;
-        this.userRepository = userRepository;
     }
 
     @Override

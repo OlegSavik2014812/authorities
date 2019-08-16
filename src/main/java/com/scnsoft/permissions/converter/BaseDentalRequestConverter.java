@@ -31,10 +31,11 @@ public abstract class BaseDentalRequestConverter<T extends BaseDentalRequest, K 
     }
 
     T initPersistence(K dto, T persistence) {
+
         Optional.ofNullable(dto.getId())
                 .ifPresent(persistence::setId);
-        LocalDate localDate = Optional.ofNullable(dto.getDate()).orElseGet(LocalDate::now);
-        persistence.setDate(localDate);
+        Optional.ofNullable(dto.getDate())
+                .ifPresentOrElse(persistence::setDate, () -> persistence.setDate(LocalDate.now()));
         userToothRepository.findById(dto.getUserToothId())
                 .ifPresent(persistence::setUserTooth);
         persistence.setDescription(dto.getDescription());

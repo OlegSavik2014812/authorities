@@ -19,7 +19,6 @@ public class TreatmentConverter extends BaseDentalRequestConverter<Treatment, Tr
         TreatmentDTO dto = initDTO(entity, new TreatmentDTO());
         dto.setCost(entity.getCost());
         return dto;
-
     }
 
     @Override

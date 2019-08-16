@@ -10,6 +10,4 @@ import java.util.Optional;
 @RepositoryRestResource(collectionResourceRel = "user_groups", path = "user_groups")
 public interface GroupRepository extends CrudRepository<Group, Long> {
     Optional<Group> findGroupByName(@Param("name") String name);
-
-    void deleteByName(@Param("name") String name);
 }

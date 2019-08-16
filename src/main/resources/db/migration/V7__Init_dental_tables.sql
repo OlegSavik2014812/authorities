@@ -32,4 +32,3 @@ create table complaints
     description   varchar(255) not null,
     primary key (id)
 );
-
