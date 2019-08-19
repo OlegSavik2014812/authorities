@@ -16,16 +16,13 @@ public class BaseDentalRequest implements PersistenceEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Convert(converter = LocalDateConverter.class)
     @Column
     private LocalDate date;
-
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_tooth_id")
     private UserTooth userTooth;
-
     @NotNull
     private String description;
 

@@ -4,7 +4,6 @@ import com.scnsoft.permissions.dto.UserDTO;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class JwtUserFactory {
@@ -19,10 +18,9 @@ public class JwtUserFactory {
     }
 
     private Collection<SimpleGrantedAuthority> getAvailableUserAuthorities(UserDTO userDTO) {
-        List<SimpleGrantedAuthority> collect = userDTO.getPermissions()
+        return userDTO.getPermissions()
                 .stream()
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
-        return collect;
     }
 }

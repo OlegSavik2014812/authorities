@@ -3,49 +3,29 @@ package com.scnsoft.permissions.service.dentistry;
 import com.scnsoft.permissions.converter.ComplaintConverter;
 import com.scnsoft.permissions.dto.ComplaintDTO;
 import com.scnsoft.permissions.persistence.entity.dentistry.Complaint;
+import com.scnsoft.permissions.persistence.entity.dentistry.UserTooth;
 import com.scnsoft.permissions.persistence.repository.dentistry.ComplaintRepository;
 import com.scnsoft.permissions.persistence.repository.dentistry.UserToothRepository;
-import com.scnsoft.permissions.service.BaseCrudService;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.function.BiFunction;
+
+import static java.time.LocalDate.now;
 
 @Service
-public class ComplaintService extends BaseCrudService<Complaint, ComplaintDTO, Long> {
-
-    private final UserToothRepository userToothRepository;
-    private final ComplaintRepository complaintRepository;
-
-    public ComplaintService(ComplaintRepository repository, ComplaintConverter converter, UserToothRepository userToothRepository) {
-        super(repository, converter);
-        this.complaintRepository = repository;
-        this.userToothRepository = userToothRepository;
+public class ComplaintService extends DentalRequestService<Complaint, ComplaintDTO> {
+    public ComplaintService(ComplaintRepository complaintRepository, ComplaintConverter converter, UserToothRepository userToothRepository) {
+        super(complaintRepository, converter, userToothRepository);
     }
 
     public void complain(ComplaintDTO complaintDTO) {
-        String problem = complaintDTO.getDescription();
-        if (Objects.isNull(problem) || problem.trim().isEmpty()) {
-            return;
-        }
-        Long userToothId = complaintDTO.getUserToothId();
-        LocalDate date = Optional.ofNullable(complaintDTO.getDate()).orElseGet(LocalDate::now);
-        userToothRepository.findById(userToothId)
-                .ifPresent(tooth ->
-                        complaintRepository.save(Complaint
-                                .complain()
-                                .on(tooth)
+        BiFunction<UserTooth, String, Complaint> converter =
+                (tooth, problem) ->
+                        Complaint.complain()
+                                .about(tooth)
+                                .when(now())
                                 .describe(problem)
-                                .when(date)
-                                .build())
-                );
-    }
-
-    @Override
-    public Collection<ComplaintDTO> findAll() {
-        return entities().collect(Collectors.toList());
+                                .build();
+        save(complaintDTO, converter);
     }
 }

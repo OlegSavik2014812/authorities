@@ -6,8 +6,9 @@ import com.scnsoft.permissions.persistence.entity.PersistenceEntity;
 import org.springframework.data.repository.CrudRepository;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public abstract class BaseCrudService<T extends PersistenceEntity<R>, K extends EntityDTO, R extends Serializable> implements EntityService<K, R> {
@@ -39,9 +40,10 @@ public abstract class BaseCrudService<T extends PersistenceEntity<R>, K extends 
                 .ifPresent(repository::deleteById);
     }
 
-    protected Stream<K> entities() {
+    public List<K> findAll() {
         return StreamSupport
                 .stream(repository.findAll().spliterator(), false)
-                .map(converter::toDTO);
+                .map(converter::toDTO)
+                .collect(Collectors.toList());
     }
 }

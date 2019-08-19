@@ -9,13 +9,10 @@ import com.scnsoft.permissions.persistence.entity.permission.Permission;
 import com.scnsoft.permissions.persistence.repository.UserRepository;
 import com.scnsoft.permissions.persistence.repository.permission.GroupRepository;
 import com.scnsoft.permissions.persistence.repository.permission.PermissionRepository;
-import com.scnsoft.permissions.service.dentistry.ComplaintService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class UserService extends BaseCrudService<User, UserDTO, Long> {
@@ -23,23 +20,22 @@ public class UserService extends BaseCrudService<User, UserDTO, Long> {
     private final GroupRepository groupRepository;
     private final UserConverter converter;
     private final PermissionRepository permissionRepository;
-    private final ComplaintService complaintService;
     private final BCryptPasswordEncoder encoder;
 
     public UserService(UserRepository userRepository,
                        GroupRepository groupRepository,
                        UserConverter converter,
-                       PermissionRepository permissionRepository, BCryptPasswordEncoder encoder, ComplaintService complaintService) {
+                       PermissionRepository permissionRepository,
+                       BCryptPasswordEncoder encoder) {
         super(userRepository, converter);
         this.userRepository = userRepository;
         this.groupRepository = groupRepository;
         this.converter = converter;
         this.permissionRepository = permissionRepository;
         this.encoder = encoder;
-        this.complaintService = complaintService;
     }
 
-    public void save(UserDTO userDTO) {
+    void save(UserDTO userDTO) {
         Optional.ofNullable(userDTO)
                 .filter(userDTO1 -> !userRepository.existsByLogin(userDTO1.getLogin()))
                 .ifPresent(userDTO1 -> {
@@ -86,10 +82,5 @@ public class UserService extends BaseCrudService<User, UserDTO, Long> {
                             return permissionRepository.save(newPermission);
                         }
                 );
-    }
-
-    @Override
-    public List<UserDTO> findAll() {
-        return entities().collect(Collectors.toList());
     }
 }

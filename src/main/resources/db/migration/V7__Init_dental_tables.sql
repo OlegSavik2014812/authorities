@@ -8,7 +8,7 @@ create table teeth
 create table treatments
 (
     id            bigint       not null auto_increment,
-    cost          decimal(19, 2),
+    price         decimal(19, 2),
     date          datetime,
     description   varchar(255) not null,
     user_tooth_id bigint       not null,

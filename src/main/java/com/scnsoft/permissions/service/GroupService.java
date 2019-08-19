@@ -7,9 +7,7 @@ import com.scnsoft.permissions.persistence.repository.permission.GroupRepository
 import com.scnsoft.permissions.persistence.repository.permission.PermissionRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class GroupService extends BaseCrudService<Group, GroupDTO, Long> {
@@ -39,10 +37,5 @@ public class GroupService extends BaseCrudService<Group, GroupDTO, Long> {
                             .ifPresent(permission -> userGroup1.getPermissions().add(permission));
                     return groupRepository.save(userGroup1);
                 }).map(groupConverter::toDTO);
-    }
-
-    @Override
-    public List<GroupDTO> findAll() {
-        return entities().collect(Collectors.toList());
     }
 }

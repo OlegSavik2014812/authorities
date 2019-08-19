@@ -8,5 +8,5 @@ import java.math.BigDecimal;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class TreatmentDTO extends BaseDentalRequestDTO {
-    private BigDecimal cost;
+    private BigDecimal price;
 }

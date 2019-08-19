@@ -1,21 +1,23 @@
 package com.scnsoft.permissions.controller;
 
 import com.scnsoft.permissions.dto.ToothDTO;
-import com.scnsoft.permissions.service.dentistry.UserToothService;
+import com.scnsoft.permissions.service.dentistry.ToothService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController(value = "teeth")
 @RequestMapping("teeth")
 public class ToothController {
-    private final UserToothService userToothService;
+    private final ToothService toothService;
 
-    public ToothController(UserToothService userToothService) {
-        this.userToothService = userToothService;
+    public ToothController(ToothService toothService) {
+        this.toothService = toothService;
     }
 
     @GetMapping("{id}")
+    @Cacheable(cacheNames = "tooth")
     public ToothDTO getTooth(@PathVariable("id") Long id) {
-        return userToothService.getTooth(id);
+        return toothService.getTooth(id);
     }
 }

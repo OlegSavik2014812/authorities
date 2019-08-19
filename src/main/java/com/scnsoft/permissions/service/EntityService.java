@@ -3,7 +3,7 @@ package com.scnsoft.permissions.service;
 import com.scnsoft.permissions.dto.EntityDTO;
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface EntityService<T extends EntityDTO, K extends Serializable> {
@@ -13,5 +13,5 @@ public interface EntityService<T extends EntityDTO, K extends Serializable> {
 
     void deleteById(K id);
 
-    Collection<T> findAll();
+    List<T> findAll();
 }

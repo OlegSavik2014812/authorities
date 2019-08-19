@@ -7,20 +7,17 @@ import com.scnsoft.permissions.persistence.repository.dentistry.ToothRepository;
 import com.scnsoft.permissions.service.BaseCrudService;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Component
 public class ToothService extends BaseCrudService<Tooth, ToothDTO, Long> {
-
-    private final ToothRepository repository;
-    private final ToothConverter converter;
+    private final ToothRepository toothRepository;
+    private final ToothConverter toothConverter;
 
     public ToothService(ToothRepository repository, ToothConverter converter) {
         super(repository, converter);
-        this.repository = repository;
-        this.converter = converter;
+        this.toothRepository = repository;
+        this.toothConverter = converter;
     }
 
     @Override
@@ -35,14 +32,10 @@ public class ToothService extends BaseCrudService<Tooth, ToothDTO, Long> {
 
     public ToothDTO getTooth(Long toothNumber) {
         if (Objects.isNull(toothNumber) || toothNumber < 0 || toothNumber > 32) {
-            return null;
+            throw new UnsupportedOperationException("Invalid tooth number. Unable to load tooth");
         }
-        return repository.findById(toothNumber).map(converter::toDTO).orElse(null);
-    }
-
-
-    @Override
-    public Collection<ToothDTO> findAll() {
-        return entities().collect(Collectors.toList());
+        return toothRepository.findById(toothNumber)
+                .map(toothConverter::toDTO)
+                .orElseThrow(() -> new UnsupportedOperationException("Unable to load tooth"));
     }
 }

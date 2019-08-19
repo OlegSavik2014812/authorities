@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "treatments")
 public class Treatment extends BaseDentalRequest {
-    private BigDecimal cost;
+    private BigDecimal price;
 
     public static Builder treat() {
         return new Treatment().new Builder();
@@ -40,8 +40,8 @@ public class Treatment extends BaseDentalRequest {
             return this;
         }
 
-        public Builder estimate(BigDecimal cost) {
-            Treatment.this.cost = cost;
+        public Builder calculate(BigDecimal cost) {
+            Treatment.this.price = cost;
             return this;
         }
 

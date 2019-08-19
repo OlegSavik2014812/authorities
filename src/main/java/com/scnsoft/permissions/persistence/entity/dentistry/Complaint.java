@@ -22,7 +22,7 @@ public class Complaint extends BaseDentalRequest {
         private Builder() {
         }
 
-        public Builder on(UserTooth userTooth) {
+        public Builder about(UserTooth userTooth) {
             Complaint.super.setUserTooth(userTooth);
             return this;
         }
