@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class UserDTO implements EntityDTO {
+public class UserDTO implements EntityDTO<Long> {
     private Long id;
     private String login;
     private String password;

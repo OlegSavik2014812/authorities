@@ -1,4 +1,4 @@
-package com.scnsoft.permissions.controller;
+package com.scnsoft.permissions.controller.dental;
 
 import com.scnsoft.permissions.dto.ComplaintDTO;
 import com.scnsoft.permissions.dto.TreatmentDTO;

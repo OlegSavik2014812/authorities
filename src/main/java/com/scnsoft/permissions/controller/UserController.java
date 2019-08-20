@@ -1,7 +1,7 @@
 package com.scnsoft.permissions.controller;
 
 import com.scnsoft.permissions.dto.UserDTO;
-import com.scnsoft.permissions.service.AuthenticationService;
+import com.scnsoft.permissions.service.permission.AuthenticationService;
 import com.scnsoft.permissions.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -42,6 +42,9 @@ public class UserController {
     public List<UserDTO> getAll() {
         return userService.findAll();
     }
+
+    @GetMapping
+    public List<UserDTO> getPatients(){return null;}
 
     @PostMapping("signUp")
     public ResponseEntity signUp(@RequestBody UserDTO user) {

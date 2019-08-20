@@ -1,18 +1,20 @@
-package com.scnsoft.permissions.service;
+package com.scnsoft.permissions.service.permission;
 
 import com.scnsoft.permissions.dto.UserDTO;
 import com.scnsoft.permissions.security.jwt.JwtTokenProvider;
 import com.scnsoft.permissions.security.jwt.JwtUserDetailsService;
+import com.scnsoft.permissions.service.UserService;
 import com.scnsoft.permissions.util.ExecutionTime;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.Map;
 
-@Component
+@Service
 public class AuthenticationService {
     private static final String LOGIN_KEY = "login";
     private static final String TOKEN_KEY = "token";

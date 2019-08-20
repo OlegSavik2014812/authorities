@@ -1,10 +1,11 @@
-package com.scnsoft.permissions.service;
+package com.scnsoft.permissions.service.permission;
 
 import com.scnsoft.permissions.converter.GroupConverter;
 import com.scnsoft.permissions.dto.GroupDTO;
 import com.scnsoft.permissions.persistence.entity.permission.Group;
 import com.scnsoft.permissions.persistence.repository.permission.GroupRepository;
 import com.scnsoft.permissions.persistence.repository.permission.PermissionRepository;
+import com.scnsoft.permissions.service.BaseCrudService;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

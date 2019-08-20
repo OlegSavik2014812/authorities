@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class GroupDTO implements EntityDTO{
+public class GroupDTO implements EntityDTO<Long>{
     private Long id;
     private String name;
     private List<String> userNames;

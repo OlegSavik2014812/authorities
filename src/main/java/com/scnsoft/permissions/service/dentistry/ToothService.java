@@ -6,10 +6,11 @@ import com.scnsoft.permissions.persistence.entity.dentistry.Tooth;
 import com.scnsoft.permissions.persistence.repository.dentistry.ToothRepository;
 import com.scnsoft.permissions.service.BaseCrudService;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
-@Component
+@Service
 public class ToothService extends BaseCrudService<Tooth, ToothDTO, Long> {
     private final ToothRepository toothRepository;
     private final ToothConverter toothConverter;

@@ -68,7 +68,6 @@ public class UserConverter implements EntityConverter<User, UserDTO> {
         Optional<Group> optionalGroup = Optional.ofNullable(entity.getGroupName())
                 .filter(Strings::isNotBlank)
                 .flatMap(groupRepository::findGroupByName);
-
         optionalGroup.ifPresent(user::setGroup);
         return user;
     }

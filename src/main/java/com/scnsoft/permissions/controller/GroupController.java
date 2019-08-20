@@ -1,7 +1,7 @@
 package com.scnsoft.permissions.controller;
 
 import com.scnsoft.permissions.dto.GroupDTO;
-import com.scnsoft.permissions.service.GroupService;
+import com.scnsoft.permissions.service.permission.GroupService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 

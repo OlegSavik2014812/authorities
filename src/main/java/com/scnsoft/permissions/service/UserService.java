@@ -35,7 +35,7 @@ public class UserService extends BaseCrudService<User, UserDTO, Long> {
         this.encoder = encoder;
     }
 
-    void save(UserDTO userDTO) {
+    public void save(UserDTO userDTO) {
         Optional.ofNullable(userDTO)
                 .filter(userDTO1 -> !userRepository.existsByLogin(userDTO1.getLogin()))
                 .ifPresent(userDTO1 -> {
