@@ -23,17 +23,16 @@ public class UserConverter implements EntityConverter<User, UserDTO> {
 
     @Override
     public UserDTO toDTO(User entity) {
-        String groupName = Optional.ofNullable(entity.getGroup())
-                .map(Group::getName).orElse(EMPTY);
+        Optional<Group> optionalGroup = Optional.ofNullable(entity.getGroup());
 
-        List<Permission> groupPermissions = Optional.ofNullable(entity.getGroup())
+        String groupName = optionalGroup
+                .map(Group::getName)
+                .orElse(EMPTY);
+        List<Permission> groupPermissions = optionalGroup
                 .map(Group::getPermissions)
                 .orElse(Collections.emptyList());
 
-        List<AdditionalPermission> additionalPermissions = Optional.ofNullable(entity.getAdditionalPermissions())
-                .orElse(Collections.emptyList());
-
-        List<String> availableUserPermissions = merge(groupPermissions, additionalPermissions);
+        List<String> availableUserPermissions = merge(groupPermissions, entity.getAdditionalPermissions());
         return UserDTO.builder()
                 .id(entity.getId())
                 .login(entity.getLogin())
@@ -44,14 +43,13 @@ public class UserConverter implements EntityConverter<User, UserDTO> {
     }
 
     private List<String> merge(List<Permission> groupPermissions, List<AdditionalPermission> additionalPermissions) {
-        Map<String, Boolean> additionalPermissionsNames = new HashMap<>();
-        additionalPermissions.forEach(permission ->
-                additionalPermissionsNames.put(permission.getPermission().getName(), permission.isEnabled()));
-
-        List<String> list = groupPermissions.stream().map(Permission::getName).collect(Collectors.toList());
-
-        list.addAll(additionalPermissionsNames.keySet());
-        return list.stream()
+        Map<String, Boolean> additionalPermissionsNames = Objects.isNull(additionalPermissions) ?
+                Collections.emptyMap() :
+                additionalPermissions.stream()
+                        .collect(Collectors.toMap(additional -> additional.getPermission().getName(), AdditionalPermission::isEnabled));
+        Set<String> set = groupPermissions.stream().map(Permission::getName).collect(Collectors.toSet());
+        set.addAll(additionalPermissionsNames.keySet());
+        return set.stream()
                 .filter(permission -> additionalPermissionsNames.getOrDefault(permission, true))
                 .collect(Collectors.toList());
     }
