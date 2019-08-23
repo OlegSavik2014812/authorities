@@ -1,7 +1,7 @@
 package com.scnsoft.permissions.service.dentistry;
 
 import com.scnsoft.permissions.converter.TreatmentConverter;
-import com.scnsoft.permissions.dto.TreatmentDTO;
+import com.scnsoft.permissions.dto.dental.TreatmentDTO;
 import com.scnsoft.permissions.persistence.entity.dentistry.Treatment;
 import com.scnsoft.permissions.persistence.entity.dentistry.UserTooth;
 import com.scnsoft.permissions.persistence.repository.dentistry.TreatmentRepository;

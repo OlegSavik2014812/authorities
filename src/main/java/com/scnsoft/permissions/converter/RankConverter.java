@@ -1,6 +1,6 @@
 package com.scnsoft.permissions.converter;
 
-import com.scnsoft.permissions.dto.RankDTO;
+import com.scnsoft.permissions.dto.personal.RankDTO;
 import com.scnsoft.permissions.persistence.entity.User;
 import com.scnsoft.permissions.persistence.entity.personal.Rank;
 import com.scnsoft.permissions.persistence.repository.UserRepository;

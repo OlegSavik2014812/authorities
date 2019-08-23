@@ -1,8 +1,10 @@
 package com.scnsoft.permissions.security.jwt;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -51,27 +53,31 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
-
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         return new UsernamePasswordAuthenticationToken(userDetails, EMPTY, userDetails.getAuthorities());
     }
 
+    public boolean validateToken(String token) {
+        if (Strings.isBlank(token)) {
+            return false;
+        }
+        try {
+            Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
+
     String resolveToken(HttpServletRequest servletRequest) {
         String header = servletRequest.getHeader(AUTHORIZATION_HEADER);
-        if (header == null) {
-            return EMPTY;
-        }
-        if (header.isEmpty()) {
+        if (Strings.isBlank(header)) {
             return EMPTY;
         }
         if (!header.startsWith(TOKEN_ID)) {
             return EMPTY;
         }
-        String substring = header.substring(TOKEN_ID.length());
-        if (substring.isEmpty()) {
-            return EMPTY;
-        }
-        return substring;
+        return header.substring(TOKEN_ID.length());
     }
 
     private List<String> getRoleNames(Collection<? extends GrantedAuthority> authorities) {

@@ -1,5 +1,6 @@
-package com.scnsoft.permissions.dto;
+package com.scnsoft.permissions.dto.personal;
 
+import com.scnsoft.permissions.dto.EntityDTO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

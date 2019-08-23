@@ -1,8 +1,8 @@
 package com.scnsoft.permissions.controller.dental;
 
-import com.scnsoft.permissions.dto.ComplaintDTO;
-import com.scnsoft.permissions.dto.TreatmentDTO;
-import com.scnsoft.permissions.dto.UserToothDTO;
+import com.scnsoft.permissions.dto.dental.ComplaintDTO;
+import com.scnsoft.permissions.dto.dental.TreatmentDTO;
+import com.scnsoft.permissions.dto.dental.UserToothDTO;
 import com.scnsoft.permissions.service.dentistry.ComplaintService;
 import com.scnsoft.permissions.service.dentistry.TreatmentService;
 import com.scnsoft.permissions.service.dentistry.UserToothService;

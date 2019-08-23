@@ -1,6 +1,6 @@
 package com.scnsoft.permissions.controller.dental;
 
-import com.scnsoft.permissions.dto.ToothDTO;
+import com.scnsoft.permissions.dto.dental.ToothDTO;
 import com.scnsoft.permissions.service.dentistry.ToothService;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;

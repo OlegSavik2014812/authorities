@@ -1,8 +1,9 @@
 package com.scnsoft.permissions.service.permission;
 
 import com.scnsoft.permissions.converter.GroupConverter;
-import com.scnsoft.permissions.dto.GroupDTO;
+import com.scnsoft.permissions.dto.security.GroupDTO;
 import com.scnsoft.permissions.persistence.entity.permission.Group;
+import com.scnsoft.permissions.persistence.entity.permission.Permission;
 import com.scnsoft.permissions.persistence.repository.permission.GroupRepository;
 import com.scnsoft.permissions.persistence.repository.permission.PermissionRepository;
 import com.scnsoft.permissions.service.BaseCrudService;
@@ -25,18 +26,20 @@ public class GroupService extends BaseCrudService<Group, GroupDTO, Long> {
         this.groupConverter = groupConverter;
     }
 
-    public Optional<GroupDTO> findByName(String userGroupName) {
-        return groupRepository
-                .findGroupByName(userGroupName)
-                .map(groupConverter::toDTO);
+    public GroupDTO save(GroupDTO groupDTO) {
+        return Optional.ofNullable(groupDTO)
+                .map(groupConverter::toPersistence)
+                .map(groupRepository::save)
+                .map(groupConverter::toDTO)
+                .orElseThrow(() -> new NullPointerException("Unable to save group"));
     }
 
-    public Optional<GroupDTO> assignPermission(String userGroupName, String permissionByName) {
-        return groupRepository.findGroupByName(userGroupName)
-                .map(userGroup1 -> {
-                    permissionRepository.findPermissionByName(permissionByName)
-                            .ifPresent(permission -> userGroup1.getPermissions().add(permission));
-                    return groupRepository.save(userGroup1);
-                }).map(groupConverter::toDTO);
+    public GroupDTO assignPermission(Long groupId, Long permissionId) {
+        Group group = groupRepository.findById(groupId).orElseThrow(() -> new NullPointerException("No such group"));
+        Permission permission = permissionRepository.findById(permissionId)
+                .orElseThrow(() -> new NullPointerException("No such permission"));
+        group.getPermissions().add(permission);
+        Group save = groupRepository.save(group);
+        return groupConverter.toDTO(save);
     }
 }

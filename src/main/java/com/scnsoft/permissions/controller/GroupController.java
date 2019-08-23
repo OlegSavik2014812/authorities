@@ -1,6 +1,6 @@
 package com.scnsoft.permissions.controller;
 
-import com.scnsoft.permissions.dto.GroupDTO;
+import com.scnsoft.permissions.dto.security.GroupDTO;
 import com.scnsoft.permissions.service.permission.GroupService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -22,22 +22,20 @@ public class GroupController {
     }
 
     @GetMapping("{id}")
-    public GroupDTO findById(@PathVariable Long id) {
+    public GroupDTO getById(@PathVariable Long id) {
         return groupService.findById(id).orElseThrow(RuntimeException::new);
     }
 
-    @PreAuthorize("hasAnyAuthority('admin','moderator')")
-    @PostMapping(path = "assignPermission", params = {"userGroupName", "permissionName"})
-    public GroupDTO assignPermission(@RequestParam String userGroupName, @RequestParam String permissionName) {
-        return groupService.assignPermission(userGroupName.toUpperCase(), permissionName.toUpperCase())
-                .orElseThrow(RuntimeException::new);
+    @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR')")
+    @GetMapping(path = "assignPermission", params = {"groupId", "permissionsId"})
+    public GroupDTO assignPermission(@RequestParam Long groupId, @RequestParam Long permissionsId) {
+        return groupService.assignPermission(groupId, permissionsId);
     }
 
-    @PreAuthorize("hasAnyAuthority('admin','moderator')")
+    @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR')")
     @PostMapping()
     public GroupDTO postGroup(@RequestBody GroupDTO groupDTO) {
         groupDTO.setName(groupDTO.getName().toUpperCase());
-        groupService.saveEntity(groupDTO);
-        return groupService.findByName(groupDTO.getName()).orElseGet(() -> GroupDTO.builder().build());
+        return groupService.save(groupDTO);
     }
 }

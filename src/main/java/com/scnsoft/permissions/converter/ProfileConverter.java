@@ -1,6 +1,6 @@
 package com.scnsoft.permissions.converter;
 
-import com.scnsoft.permissions.dto.ProfileDTO;
+import com.scnsoft.permissions.dto.personal.ProfileDTO;
 import com.scnsoft.permissions.persistence.entity.User;
 import com.scnsoft.permissions.persistence.entity.personal.Profile;
 import com.scnsoft.permissions.persistence.repository.UserRepository;

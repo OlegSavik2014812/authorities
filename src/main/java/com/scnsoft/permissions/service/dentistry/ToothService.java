@@ -1,11 +1,10 @@
 package com.scnsoft.permissions.service.dentistry;
 
 import com.scnsoft.permissions.converter.ToothConverter;
-import com.scnsoft.permissions.dto.ToothDTO;
+import com.scnsoft.permissions.dto.dental.ToothDTO;
 import com.scnsoft.permissions.persistence.entity.dentistry.Tooth;
 import com.scnsoft.permissions.persistence.repository.dentistry.ToothRepository;
 import com.scnsoft.permissions.service.BaseCrudService;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;

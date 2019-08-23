@@ -1,7 +1,7 @@
 package com.scnsoft.permissions.converter;
 
 import com.google.common.collect.Lists;
-import com.scnsoft.permissions.dto.UserToothDTO;
+import com.scnsoft.permissions.dto.dental.UserToothDTO;
 import com.scnsoft.permissions.persistence.entity.dentistry.Tooth;
 import com.scnsoft.permissions.persistence.entity.dentistry.UserTooth;
 import com.scnsoft.permissions.persistence.repository.UserRepository;

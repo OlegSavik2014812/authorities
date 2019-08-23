@@ -1,6 +1,6 @@
 package com.scnsoft.permissions.converter;
 
-import com.scnsoft.permissions.dto.ToothDTO;
+import com.scnsoft.permissions.dto.dental.ToothDTO;
 import com.scnsoft.permissions.persistence.entity.dentistry.Tooth;
 import com.scnsoft.permissions.persistence.repository.dentistry.ToothRepository;
 import org.springframework.stereotype.Component;

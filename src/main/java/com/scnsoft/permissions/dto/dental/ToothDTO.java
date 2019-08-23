@@ -1,5 +1,6 @@
-package com.scnsoft.permissions.dto;
+package com.scnsoft.permissions.dto.dental;
 
+import com.scnsoft.permissions.dto.EntityDTO;
 import lombok.Data;
 
 @Data

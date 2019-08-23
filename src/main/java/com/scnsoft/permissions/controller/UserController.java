@@ -2,30 +2,19 @@ package com.scnsoft.permissions.controller;
 
 import com.scnsoft.permissions.dto.UserDTO;
 import com.scnsoft.permissions.service.UserService;
-import com.scnsoft.permissions.service.permission.AuthenticationService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("users")
 public class UserController {
     private final UserService userService;
-    private final AuthenticationService authenticationService;
 
-    public UserController(UserService userService, AuthenticationService authenticationService) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.authenticationService = authenticationService;
-    }
-
-    @PostMapping("signIn")
-    public ResponseEntity signIn(@RequestBody UserDTO user) {
-        Map<Object, Object> map = authenticationService.signIn(user);
-        return ResponseEntity.ok(map);
     }
 
     @GetMapping(value = "{id}")
@@ -39,7 +28,8 @@ public class UserController {
     }
 
     @GetMapping()
-    public List<UserDTO> getAll() {
+    public List<UserDTO> getAll(@RequestParam(value = "from") Long from,
+                                @RequestParam(value = "to") Long to) {
         return userService.findAll();
     }
 
@@ -48,31 +38,23 @@ public class UserController {
         return null;
     }
 
-    @PostMapping("signUp")
-    public ResponseEntity signUp(@RequestBody UserDTO user) {
-        Map<Object, Object> map = authenticationService.signUp(user);
-        return ResponseEntity.ok(map);
-    }
-
-    @PreAuthorize("hasAuthority('admin')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("delete/{id}")
     public void deleteById(@PathVariable(value = "id") Long id) {
         userService.deleteById(id);
     }
 
-    @PreAuthorize("hasAnyAuthority('admin','moderator')")
-    @GetMapping(path = "assignGroup", params = {"login", "groupNames"})
-    public UserDTO assignGroup(@RequestParam String login, @RequestParam String groupName) {
-        userService.assignGroup(login, groupName.toUpperCase());
-        return userService.findByLogin(login).orElseThrow(RuntimeException::new);
+    @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR')")
+    @GetMapping(path = "assignGroup", params = {"id", "groupId"})
+    public UserDTO assignGroup(@RequestParam Long id, @RequestParam Long groupId) {
+        return userService.assignGroup(id, groupId);
     }
 
-    @PreAuthorize("hasAnyAuthority('admin','moderator')")
-    @GetMapping(path = "assignPermission", params = {"login", "groupNames"})
-    public UserDTO assignPermission(@RequestParam String login,
-                                    @RequestParam String permissionName,
+    @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR')")
+    @GetMapping(path = "assignPermission", params = {"userId", "permId", "isEnabled"})
+    public UserDTO assignPermission(@RequestParam Long userId,
+                                    @RequestParam Long permId,
                                     @RequestParam boolean isEnabled) {
-        userService.assignAdditionalPermission(login, permissionName.toUpperCase(), isEnabled);
-        return userService.findByLogin(login).orElseThrow(RuntimeException::new);
+        return userService.assignAdditionalPermission(userId, permId, isEnabled);
     }
 }

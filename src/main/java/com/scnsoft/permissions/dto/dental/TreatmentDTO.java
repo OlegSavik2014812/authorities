@@ -1,4 +1,4 @@
-package com.scnsoft.permissions.dto;
+package com.scnsoft.permissions.dto.dental;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

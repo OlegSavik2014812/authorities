@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 public class JwtUserFactory {
+
     public JwtUser build(UserDTO userDTO) {
         return JwtUser.builder()
                 .id(userDTO.getId())
