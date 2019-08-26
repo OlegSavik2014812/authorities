@@ -35,7 +35,8 @@ public class GroupService extends BaseCrudService<Group, GroupDTO, Long> {
     }
 
     public GroupDTO assignPermission(Long groupId, Long permissionId) {
-        Group group = groupRepository.findById(groupId).orElseThrow(() -> new NullPointerException("No such group"));
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new NullPointerException("No such group"));
         Permission permission = permissionRepository.findById(permissionId)
                 .orElseThrow(() -> new NullPointerException("No such permission"));
         group.getPermissions().add(permission);
