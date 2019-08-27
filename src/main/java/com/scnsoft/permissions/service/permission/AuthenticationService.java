@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 @Service
 public class AuthenticationService {
@@ -31,12 +32,14 @@ public class AuthenticationService {
     private final JwtUserDetailsService userDetailsService;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
+    private final Pattern pattern;
 
     public AuthenticationService(AuthenticationManager authenticationManager, JwtUserDetailsService userDetailsService, JwtTokenProvider jwtTokenProvider, UserService userService) {
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.jwtTokenProvider = jwtTokenProvider;
         this.userService = userService;
+        pattern = Pattern.compile("^(?=.*[A-Za-z0-9]$)[A-Za-z][A-Za-z\\d.-]{0,256}$");
     }
 
 
@@ -74,18 +77,12 @@ public class AuthenticationService {
             LOGGER.error("Unable to authenticate user");
             throw new UsernameNotFoundException("User is not presented");
         }
-        Predicate<String> isInputValid = s -> {
-            if (Strings.isBlank(s)) {
-                return false;
-            }
-            int length = s.length();
-            return length > 5 && length < 255;
-        };
-        if (isInputValid.negate().test(userDTO.getLogin())) {
+        Predicate<String> isInputInvalid = inputString -> !(Strings.isNotBlank(inputString) && pattern.matcher(inputString).matches());
+        if (isInputInvalid.test(userDTO.getLogin())) {
             LOGGER.error("Unable to authenticate user, login is not valid");
             return false;
         }
-        if (isInputValid.negate().test(userDTO.getPassword())) {
+        if (isInputInvalid.test(userDTO.getPassword())) {
             LOGGER.error("Unable to authenticate user, password is not valid");
             return false;
         }
