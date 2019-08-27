@@ -77,12 +77,12 @@ public class AuthenticationService {
             LOGGER.error("Unable to authenticate user");
             throw new UsernameNotFoundException("User is not presented");
         }
-        Predicate<String> isInputInvalid = inputString -> !(Strings.isNotBlank(inputString) && pattern.matcher(inputString).matches());
-        if (isInputInvalid.test(userDTO.getLogin())) {
+        Predicate<String> isInputValid = inputString -> Strings.isNotBlank(inputString) && pattern.matcher(inputString).matches();
+        if (isInputValid.negate().test(userDTO.getLogin())) {
             LOGGER.error("Unable to authenticate user, login is not valid");
             return false;
         }
-        if (isInputInvalid.test(userDTO.getPassword())) {
+        if (isInputValid.negate().test(userDTO.getPassword())) {
             LOGGER.error("Unable to authenticate user, password is not valid");
             return false;
         }

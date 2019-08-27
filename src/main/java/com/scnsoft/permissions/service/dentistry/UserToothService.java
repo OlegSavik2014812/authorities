@@ -12,6 +12,7 @@ import com.scnsoft.permissions.persistence.entity.dentistry.BaseDentalRequest;
 import com.scnsoft.permissions.persistence.entity.dentistry.UserTooth;
 import com.scnsoft.permissions.persistence.repository.dentistry.UserToothRepository;
 import com.scnsoft.permissions.service.BaseCrudService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -66,14 +67,8 @@ public class UserToothService extends BaseCrudService<UserTooth, UserToothDTO, L
 
         Long id = userTooth.getId();
 
-        UnaryOperator<ComplaintDTO> complaintOperator = complaintDTO -> {
-            complaintDTO.setUserToothId(id);
-            return complaintDTO;
-        };
-        UnaryOperator<TreatmentDTO> treatmentOperator = treatmentDTO -> {
-            treatmentDTO.setUserToothId(id);
-            return treatmentDTO;
-        };
+        UnaryOperator<ComplaintDTO> complaintOperator = getDentalReqOperator(id);
+        UnaryOperator<TreatmentDTO> treatmentOperator = getDentalReqOperator(id);
 
         convert(userToothDTO::getComplaints,
                 complaintOperator.andThen(complaintConverter::toPersistence),
@@ -87,14 +82,20 @@ public class UserToothService extends BaseCrudService<UserTooth, UserToothDTO, L
         return complainedTooth.getId();
     }
 
-    private <T extends BaseDentalRequest, K extends BaseDentalRequestDTO> void convert(Supplier<List<K>> supplier, Function<K, T> converter, Consumer<List<T>> consumer) {
+    private <K extends BaseDentalRequestDTO> UnaryOperator<K> getDentalReqOperator(Long userToothId) {
+        return k -> {
+            k.setUserToothId(userToothId);
+            return k;
+        };
+    }
+
+    private <T extends BaseDentalRequest, K extends BaseDentalRequestDTO> void convert(Supplier<List<K>> supplier, Function<K, T> mapper, Consumer<List<T>> consumer) {
         List<K> dtoItems = supplier.get();
-        if (Objects.isNull(dtoItems) || dtoItems.isEmpty()) {
-            return;
+        if (CollectionUtils.isNotEmpty(dtoItems)) {
+            dtoItems.stream()
+                    .map(mapper)
+                    .collect(Collectors.collectingAndThen(Collectors.toList(), Optional::of))
+                    .ifPresent(consumer);
         }
-        dtoItems.stream()
-                .map(converter)
-                .collect(Collectors.collectingAndThen(Collectors.toList(), Optional::of))
-                .ifPresent(consumer);
     }
 }

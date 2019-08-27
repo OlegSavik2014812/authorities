@@ -1,15 +1,14 @@
 package com.scnsoft.permissions.converter;
 
-import com.google.common.collect.Lists;
 import com.scnsoft.permissions.dto.dental.UserToothDTO;
 import com.scnsoft.permissions.persistence.entity.dentistry.Tooth;
 import com.scnsoft.permissions.persistence.entity.dentistry.UserTooth;
 import com.scnsoft.permissions.persistence.repository.UserRepository;
 import com.scnsoft.permissions.persistence.repository.dentistry.ToothRepository;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -64,15 +63,15 @@ public class UserToothConverter implements EntityConverter<UserTooth, UserToothD
         return userTooth;
     }
 
-    private <T, K> void setDentalReq(Supplier<Iterable<T>> supplier, Function<T, K> mapper, Consumer<List<K>> consumer) {
-        Iterable<T> ts = Optional.ofNullable(supplier.get()).orElse(Collections.emptyList());
-        List<T> suppliedList = Lists.newArrayList(ts);
-        if (!suppliedList.isEmpty()) {
-            suppliedList.stream()
-                    .filter(Objects::nonNull)
-                    .map(mapper)
-                    .collect(Collectors.collectingAndThen(Collectors.toList(), Optional::of))
-                    .ifPresent(consumer);
+    private <T, K> void setDentalReq(Supplier<List<T>> supplier, Function<T, K> mapper, Consumer<List<K>> consumer) {
+        List<T> entities = supplier.get();
+        if (CollectionUtils.isEmpty(entities)) {
+            return;
         }
+        entities.stream()
+                .filter(Objects::nonNull)
+                .map(mapper)
+                .collect(Collectors.collectingAndThen(Collectors.toList(), Optional::of))
+                .ifPresent(consumer);
     }
 }
