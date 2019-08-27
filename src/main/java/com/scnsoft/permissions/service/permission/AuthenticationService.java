@@ -95,7 +95,6 @@ public class AuthenticationService {
         }
         if (!inputPermissions.contains(PATIENT_PERMISSION)) {
             inputPermissions.add(PATIENT_PERMISSION);
-            return inputPermissions;
         }
         return inputPermissions;
     }
