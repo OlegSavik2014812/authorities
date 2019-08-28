@@ -47,7 +47,13 @@ public class UserController {
     @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR')")
     @GetMapping(path = "assignGroup", params = {"id", "groupId"})
     public UserDTO assignGroup(@RequestParam Long id, @RequestParam Long groupId) {
-        return userService.assignGroup(id, groupId);
+        return userService.updateGroup(id, groupId);
+    }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR')")
+    @GetMapping(path = "releaseGroup", params = {"id"})
+    public UserDTO releaseGroup(@RequestParam Long id) {
+        return userService.updateGroup(id, null);
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR')")
@@ -55,6 +61,13 @@ public class UserController {
     public UserDTO assignPermission(@RequestParam Long userId,
                                     @RequestParam Long permId,
                                     @RequestParam boolean isEnabled) {
-        return userService.assignAdditionalPermission(userId, permId, isEnabled);
+        return userService.updateAdditionalPermission(userId, permId, isEnabled);
+    }
+    @PreAuthorize("hasAnyAuthority('ADMIN','MODERATOR')")
+    @GetMapping(path = "assignPermission", params = {"userId", "permId", "isEnabled"})
+    public UserDTO releasePermission(@RequestParam Long userId,
+                                    @RequestParam Long permId,
+                                    @RequestParam boolean isEnabled) {
+        return userService.updateAdditionalPermission(userId, permId, isEnabled);
     }
 }

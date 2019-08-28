@@ -11,7 +11,6 @@ import java.util.Optional;
 
 public class JwtUserDetailsService implements UserDetailsService {
     private final UserService userService;
-
     private final JwtUserFactory jwtUserFactory;
 
     public JwtUserDetailsService(UserService userService, JwtUserFactory jwtUserFactory) {

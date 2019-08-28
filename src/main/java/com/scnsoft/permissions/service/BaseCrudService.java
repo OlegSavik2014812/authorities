@@ -46,4 +46,8 @@ public abstract class BaseCrudService<T extends PersistenceEntity<R>, K extends 
                 .map(converter::toDTO)
                 .collect(Collectors.toList());
     }
+
+    public long count() {
+        return repository.count();
+    }
 }

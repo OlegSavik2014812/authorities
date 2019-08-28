@@ -23,13 +23,11 @@ public class DentalRequestService<T extends BaseDentalRequest, K extends BaseDen
 
     void save(K entity, BiFunction<UserTooth, String, T> converter) {
         String description = entity.getDescription();
-        if (Strings.isBlank(description)) {
-            return;
+        if (Strings.isNotBlank(description)) {
+            userToothRepository.findById(entity.getUserToothId())
+                    .ifPresent(userTooth ->
+                            crudRepository.save(
+                                    converter.apply(userTooth, description)));
         }
-        userToothRepository.findById(entity.getUserToothId())
-                .ifPresent(userTooth ->
-                        crudRepository.save(
-                                converter.apply(userTooth, description)));
-
     }
 }

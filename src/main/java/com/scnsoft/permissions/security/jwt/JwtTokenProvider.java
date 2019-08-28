@@ -8,25 +8,20 @@ import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
-import java.util.List;
 
 public class JwtTokenProvider {
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String TOKEN_ID = "Token_";
     private static final String AUTHORITIES = "authorities";
     private static final String EMPTY = "";
-
     @Value("${jwt.token.secret}")
     private String secret;
-
     private final JwtUserDetailsService userDetailsService;
 
     public JwtTokenProvider(JwtUserDetailsService userDetailsService) {
@@ -38,9 +33,9 @@ public class JwtTokenProvider {
         secret = Base64.getEncoder().encodeToString(secret.getBytes());
     }
 
-    public String createToken(UserDetails userDetails) {
-        Claims claims = Jwts.claims().setSubject(userDetails.getUsername());
-        claims.put(AUTHORITIES, getRoleNames(userDetails.getAuthorities()));
+    public String createToken(String userName, Collection<String> roles) {
+        Claims claims = Jwts.claims().setSubject(userName);
+        claims.put(AUTHORITIES, roles);
         return Jwts.builder()
                 .setClaims(claims)
                 .signWith(SignatureAlgorithm.HS256, secret)
@@ -57,7 +52,7 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(userDetails, EMPTY, userDetails.getAuthorities());
     }
 
-    public boolean validateToken(String token) {
+    boolean validateToken(String token) {
         if (Strings.isBlank(token)) {
             return false;
         }
@@ -78,11 +73,5 @@ public class JwtTokenProvider {
             return EMPTY;
         }
         return header.substring(TOKEN_ID.length());
-    }
-
-    private List<String> getRoleNames(Collection<? extends GrantedAuthority> authorities) {
-        List<String> list = new ArrayList<>();
-        authorities.forEach(auth -> list.add(auth.getAuthority()));
-        return list;
     }
 }

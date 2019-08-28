@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.function.UnaryOperator;
 
 @Service
 public class UserService extends BaseCrudService<User, UserDTO, Long> {
@@ -50,6 +51,7 @@ public class UserService extends BaseCrudService<User, UserDTO, Long> {
                 .map(userConverter::toDTO)
                 .orElseThrow(() -> new NullPointerException("Unable to save user"));
     }
+
     private String encrypt(String string) {
         return Optional.ofNullable(string)
                 .filter(Strings::isNotBlank)
@@ -62,27 +64,47 @@ public class UserService extends BaseCrudService<User, UserDTO, Long> {
                 .map(userConverter::toDTO);
     }
 
-    public UserDTO assignGroup(Long userId, Long groupId) {
-        User user = getById(userRepository, userId);
-        Group group = getById(groupRepository, groupId);
-        user.setGroup(group);
-        User save = userRepository.save(user);
-        return userConverter.toDTO(save);
+    public UserDTO updateGroup(Long userId, Long groupId) {
+        UnaryOperator<User> updateGroup = user1 -> {
+            Group group = Optional.ofNullable(groupId)
+                    .flatMap(groupRepository::findById)
+                    .orElse(null);
+            user1.setGroup(group);
+            return user1;
+        };
+        return executeAssigment(updateGroup, userId);
     }
 
-    public UserDTO assignAdditionalPermission(Long userId, Long permissionId, boolean isEnabled) {
+    public UserDTO updateAdditionalPermission(Long userId, Long permissionId, boolean isEnabled) {
+        UnaryOperator<User> assignPermission = user1 -> {
+            Permission permission = getById(permissionRepository, permissionId);
+            user1.getAdditionalPermissions().add(
+                    AdditionalPermission.builder()
+                            .id(new CompositePermissionId(userId, permissionId))
+                            .user(user1)
+                            .permission(permission)
+                            .isEnabled(isEnabled)
+                            .build()
+            );
+            return user1;
+        };
+        return executeAssigment(assignPermission, userId);
+    }
+
+    public UserDTO deletePermission(Long userId, Long permissionId) {
+        UnaryOperator<User> deletePermission = user1 -> {
+            user1.getAdditionalPermissions()
+                    .removeIf(additionalPermission -> additionalPermission.getPermission().getId().equals(permissionId));
+            return user1;
+        };
+        return executeAssigment(deletePermission, userId);
+    }
+
+    private UserDTO executeAssigment(UnaryOperator<User> assignAction, Long userId) {
         User user = getById(userRepository, userId);
-        Permission permission = getById(permissionRepository, permissionId);
-        user.getAdditionalPermissions().add(
-                AdditionalPermission.builder()
-                        .id(new CompositePermissionId(userId, permissionId))
-                        .user(user)
-                        .permission(permission)
-                        .isEnabled(isEnabled)
-                        .build()
-        );
-        User save = userRepository.save(user);
-        return userConverter.toDTO(save);
+        User assignedUser = assignAction.apply(user);
+        User savedUser = userRepository.save(assignedUser);
+        return userConverter.toDTO(savedUser);
     }
 
     private <T> T getById(CrudRepository<T, Long> repository, Long id) {
