@@ -7,7 +7,7 @@ import com.scnsoft.permissions.persistence.repository.dentistry.UserToothReposit
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Component
@@ -28,7 +28,7 @@ public class TreatmentConverter extends BaseDentalRequestConverter<Treatment, Tr
     @Override
     public Treatment toPersistence(TreatmentDTO entity) {
         UserTooth tooth = userToothRepository.findById(entity.getUserToothId()).orElseGet(UserTooth::new);
-        LocalDate date = Optional.ofNullable(entity.getDate()).orElseGet(LocalDate::now);
+        LocalDateTime date = Optional.ofNullable(entity.getDate()).orElseGet(LocalDateTime::now);
         String operation = entity.getDescription();
         BigDecimal price = entity.getPrice();
 

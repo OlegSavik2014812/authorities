@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -30,8 +30,8 @@ public class Treatment extends BaseDentalRequest {
             return this;
         }
 
-        public Builder when(LocalDate localDate) {
-            Treatment.super.setDate(localDate);
+        public Builder when(LocalDateTime localDateTime) {
+            Treatment.super.setDate(localDateTime);
             return this;
         }
 

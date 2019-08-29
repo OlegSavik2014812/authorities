@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.function.BiFunction;
 
-import static java.time.LocalDate.now;
+import static java.time.LocalDateTime.now;
 
 @Service
 public class ComplaintService extends DentalRequestService<Complaint, ComplaintDTO> {

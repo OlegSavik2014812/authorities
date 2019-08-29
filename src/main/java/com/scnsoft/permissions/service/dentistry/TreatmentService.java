@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 
 import static java.math.BigDecimal.ZERO;
-import static java.time.LocalDate.now;
+import static java.time.LocalDateTime.now;
 
 @Service
 public class TreatmentService extends DentalRequestService<Treatment, TreatmentDTO> {

@@ -7,7 +7,7 @@ import com.scnsoft.permissions.persistence.repository.dentistry.UserToothReposit
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Component
@@ -27,7 +27,7 @@ public class ComplaintConverter extends BaseDentalRequestConverter<Complaint, Co
     @Override
     public Complaint toPersistence(ComplaintDTO entity) {
         UserTooth tooth = userToothRepository.findById(entity.getUserToothId()).orElseGet(UserTooth::new);
-        LocalDate date = Optional.ofNullable(entity.getDate()).orElseGet(LocalDate::now);
+        LocalDateTime date = Optional.ofNullable(entity.getDate()).orElseGet(LocalDateTime::now);
         String problem = entity.getDescription();
 
         return Complaint.complain()

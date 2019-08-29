@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -27,8 +27,8 @@ public class Complaint extends BaseDentalRequest {
             return this;
         }
 
-        public Builder when(LocalDate localDate) {
-            Complaint.super.setDate(localDate);
+        public Builder when(LocalDateTime localDateTime) {
+            Complaint.super.setDate(localDateTime);
             return this;
         }
 
