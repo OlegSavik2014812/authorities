@@ -53,6 +53,10 @@ public class AuthenticationService {
             return Collections.emptyMap();
         }
         String login = userDTO.getLogin();
+        if (userService.existByLogin(login)) {
+            LOGGER.error("Unable to sign up. User with name: \"{}\" is already exist.", login);
+            return Collections.emptyMap();
+        }
         String password = userDTO.getPassword();
         userDTO.setPermissions(getValidPermissions(userDTO.getPermissions()));
         userService.save(userDTO);

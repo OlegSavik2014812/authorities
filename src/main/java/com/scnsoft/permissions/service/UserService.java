@@ -59,6 +59,10 @@ public class UserService extends BaseCrudService<User, UserDTO, Long> {
                 .orElseThrow(() -> new NullPointerException("Password is empty"));
     }
 
+    public boolean existByLogin(String userLogin) {
+        return userRepository.existsByLogin(userLogin);
+    }
+
     public Optional<UserDTO> findByLogin(String name) {
         return userRepository.findUserByLogin(name)
                 .map(userConverter::toDTO);

@@ -1,6 +1,5 @@
 package com.scnsoft.permissions.service.dentistry;
 
-import com.google.common.collect.Lists;
 import com.scnsoft.permissions.converter.ComplaintConverter;
 import com.scnsoft.permissions.converter.TreatmentConverter;
 import com.scnsoft.permissions.converter.UserToothConverter;
@@ -25,6 +24,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class UserToothService extends BaseCrudService<UserTooth, UserToothDTO, Long> {
@@ -48,12 +48,11 @@ public class UserToothService extends BaseCrudService<UserTooth, UserToothDTO, L
     public List<UserToothDTO> getUserTeeth(Long userId) {
         return Optional.ofNullable(userId)
                 .map(userToothRepository::findAllByUserId)
-                .map(Lists::newArrayList)
-                .map(Collections::unmodifiableList)
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(userToothConverter::toDTO)
-                .collect(Collectors.toList());
+                .map(iterable ->
+                        StreamSupport.stream(iterable.spliterator(), false)
+                                .map(userToothConverter::toDTO)
+                                .collect(Collectors.toList()))
+                .orElse(Collections.emptyList());
     }
 
     public Long save(UserToothDTO userToothDTO) {
@@ -63,26 +62,21 @@ public class UserToothService extends BaseCrudService<UserTooth, UserToothDTO, L
         UserTooth userTooth = Optional.of(userToothDTO)
                 .map(userToothConverter::toPersistence)
                 .map(userToothRepository::save)
-                .orElseGet(UserTooth::new);
+                .orElseThrow(() -> new UnsupportedOperationException("Unable to save user tooth"));
 
         Long id = userTooth.getId();
 
-        UnaryOperator<ComplaintDTO> complaintOperator = getDentalReqOperator(id);
-        UnaryOperator<TreatmentDTO> treatmentOperator = getDentalReqOperator(id);
+        UnaryOperator<ComplaintDTO> complaintUserToothIdSetter = getUserToothIdSetter(id);
+        UnaryOperator<TreatmentDTO> treatmentUserToothIdSetter = getUserToothIdSetter(id);
 
-        convert(userToothDTO::getComplaints,
-                complaintOperator.andThen(complaintConverter::toPersistence),
-                userTooth::setComplaints);
-
-        convert(userToothDTO::getTreatments,
-                treatmentOperator.andThen(treatmentConverter::toPersistence),
-                userTooth::setTreatments);
+        convert(userToothDTO::getComplaints, complaintUserToothIdSetter.andThen(complaintConverter::toPersistence), userTooth::setComplaints);
+        convert(userToothDTO::getTreatments, treatmentUserToothIdSetter.andThen(treatmentConverter::toPersistence), userTooth::setTreatments);
 
         UserTooth complainedTooth = userToothRepository.save(userTooth);
         return complainedTooth.getId();
     }
 
-    private <K extends BaseDentalRequestDTO> UnaryOperator<K> getDentalReqOperator(Long userToothId) {
+    private <K extends BaseDentalRequestDTO> UnaryOperator<K> getUserToothIdSetter(Long userToothId) {
         return k -> {
             k.setUserToothId(userToothId);
             return k;
