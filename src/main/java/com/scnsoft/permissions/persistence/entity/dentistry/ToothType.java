@@ -6,15 +6,6 @@ public enum ToothType {
     PREMOLAR,
     MOLAR;
 
-    public static ToothType fromString(String toothType) {
-        for (ToothType type : values()) {
-            if (type.name().equalsIgnoreCase(toothType)) {
-                return type;
-            }
-        }
-        return null;
-    }
-
     @Override
     public String toString() {
         return this.name();
