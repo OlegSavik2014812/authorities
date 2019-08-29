@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthenticationService {
@@ -63,7 +64,10 @@ public class AuthenticationService {
         JwtUser principal = (JwtUser) authenticate.getPrincipal();
 
         String username = principal.getUsername();
-        Collection<String> roleNames = getRoleNames(authenticate.getAuthorities());
+        Collection<String> roleNames = authenticate.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toSet());
 
         String token = jwtTokenProvider.createToken(username, roleNames);
         return Map.of(LOGIN_KEY, username, PERMISSIONS_KEY, roleNames, TOKEN_KEY, token);
@@ -94,11 +98,5 @@ public class AuthenticationService {
             inputPermissions.add(PATIENT_PERMISSION);
         }
         return inputPermissions;
-    }
-
-    private Set<String> getRoleNames(Collection<? extends GrantedAuthority> authorities) {
-        Set<String> set = new HashSet<>();
-        authorities.forEach(auth -> set.add(auth.getAuthority()));
-        return set;
     }
 }

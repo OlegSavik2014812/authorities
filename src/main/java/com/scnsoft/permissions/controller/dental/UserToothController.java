@@ -22,7 +22,9 @@ public class UserToothController {
     private final TreatmentService treatmentService;
 
     @Autowired
-    public UserToothController(UserToothService userToothService, ComplaintService complaintService, TreatmentService treatmentService) {
+    public UserToothController(UserToothService userToothService,
+                               ComplaintService complaintService,
+                               TreatmentService treatmentService) {
         this.userToothService = userToothService;
         this.complaintService = complaintService;
         this.treatmentService = treatmentService;
@@ -47,6 +49,11 @@ public class UserToothController {
     @GetMapping()
     public UserToothDTO getUserTooth(@RequestParam(value = "id") Long id) {
         return userToothService.findById(id).orElse(UserToothDTO.builder().build());
+    }
+
+    @PostMapping("/delete")
+    public void deleteById(@RequestParam(value = "id") Long id) {
+        userToothService.deleteById(id);
     }
 
     @GetMapping("{id}")

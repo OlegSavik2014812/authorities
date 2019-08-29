@@ -5,6 +5,8 @@ import com.scnsoft.permissions.service.dentistry.ToothService;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController(value = "teeth")
 @RequestMapping("teeth")
@@ -19,5 +21,11 @@ public class ToothController {
     @Cacheable(cacheNames = "tooth")
     public ToothDTO getTooth(@PathVariable("id") Long id) {
         return toothService.getTooth(id);
+    }
+
+    @GetMapping
+    @Cacheable(cacheNames = "teeth")
+    public List<ToothDTO> getTeeth() {
+        return toothService.findAll();
     }
 }

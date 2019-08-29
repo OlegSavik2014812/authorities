@@ -1,6 +1,7 @@
 package com.scnsoft.permissions.security.jwt;
 
 import com.scnsoft.permissions.service.UserService;
+import com.scnsoft.permissions.util.ExecutionTime;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,6 +19,7 @@ public class JwtUserDetailsService implements UserDetailsService {
         this.jwtUserFactory = jwtUserFactory;
     }
 
+    @ExecutionTime
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) {

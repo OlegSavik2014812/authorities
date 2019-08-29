@@ -15,8 +15,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Component
@@ -53,24 +51,21 @@ public class GroupConverter implements EntityConverter<Group, GroupDTO> {
 
         Optional.ofNullable(entity.getId())
                 .ifPresent(group::setId);
-
         group.setName(entity.getName());
 
-        Predicate<List<String>> isNotEmpty = strings -> !strings.isEmpty();
-
-        Optional.ofNullable(entity.getPermissionNames())
-                .filter(isNotEmpty)
-                .ifPresent(names -> setUpList(() -> permissionRepository.findPermissionsByNames(names), group::setPermissions));
-
-        Optional.ofNullable(entity.getUserNames())
-                .filter(isNotEmpty)
-                .ifPresent(names -> setUpList(() -> userRepository.findUsersByNames(names), group::setUsers));
+        setUpList(entity.getPermissionNames(), permissionRepository::findPermissionsByNames, group::setPermissions);
+        setUpList(entity.getUserNames(), userRepository::findUsersByNames, group::setUsers);
 
         return group;
     }
 
-    private <T> void setUpList(Supplier<Iterable<T>> supplier, Consumer<List<T>> setter) {
-        List<T> entities = Lists.newArrayList(supplier.get());
-        setter.accept(entities);
+    private <T> void setUpList(List<String> stringEntitySource,
+                               Function<Iterable<String>, Iterable<T>> stringEntityMapper,
+                               Consumer<List<T>> entityConsumer) {
+        Optional.ofNullable(stringEntitySource)
+                .filter(strings -> !strings.isEmpty())
+                .map(stringEntityMapper)
+                .map(Lists::newArrayList)
+                .ifPresent(entityConsumer);
     }
 }

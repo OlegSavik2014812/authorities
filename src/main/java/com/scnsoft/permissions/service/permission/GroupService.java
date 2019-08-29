@@ -10,6 +10,7 @@ import com.scnsoft.permissions.service.BaseCrudService;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.function.UnaryOperator;
 
 @Service
 public class GroupService extends BaseCrudService<Group, GroupDTO, Long> {
@@ -35,12 +36,28 @@ public class GroupService extends BaseCrudService<Group, GroupDTO, Long> {
     }
 
     public GroupDTO assignPermission(Long groupId, Long permissionId) {
+        UnaryOperator<Group> assignPermission = group -> {
+            Permission permission = permissionRepository.findById(permissionId)
+                    .orElseThrow(() -> new NullPointerException("No such permission"));
+            group.getPermissions().add(permission);
+            return group;
+        };
+        return executePermissionAction(assignPermission, groupId);
+    }
+
+    public GroupDTO releasePermission(Long groupId, Long permissionId) {
+        UnaryOperator<Group> releasePermission = group -> {
+            group.getPermissions().removeIf(permission1 -> permission1.getId().equals(permissionId));
+            return group;
+        };
+        return executePermissionAction(releasePermission, groupId);
+    }
+
+    private GroupDTO executePermissionAction(UnaryOperator<Group> action, Long groupId) {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new NullPointerException("No such group"));
-        Permission permission = permissionRepository.findById(permissionId)
-                .orElseThrow(() -> new NullPointerException("No such permission"));
-        group.getPermissions().add(permission);
-        Group save = groupRepository.save(group);
+        Group apply = action.apply(group);
+        Group save = groupRepository.save(apply);
         return groupConverter.toDTO(save);
     }
 }
