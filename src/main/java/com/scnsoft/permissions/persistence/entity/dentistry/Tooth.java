@@ -14,7 +14,6 @@ import java.util.List;
 @Entity
 @Table(name = "teeth")
 public class Tooth implements PersistenceEntity<Long> {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

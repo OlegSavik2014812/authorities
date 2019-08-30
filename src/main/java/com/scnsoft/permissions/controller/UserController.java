@@ -28,8 +28,7 @@ public class UserController {
     }
 
     @GetMapping()
-    public List<UserDTO> getAll(@RequestParam(value = "from") Long from,
-                                @RequestParam(value = "to") Long to) {
+    public List<UserDTO> getAll() {
         return userService.findAll();
     }
 

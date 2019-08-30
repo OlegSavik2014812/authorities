@@ -47,9 +47,9 @@ public class User implements PersistenceEntity<Long> {
             fetch = FetchType.LAZY)
     private List<UserTooth> teeth;
 
-    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Profile profile;
 
-    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Rank rank;
 }

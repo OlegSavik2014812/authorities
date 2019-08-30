@@ -65,7 +65,7 @@ public class UserConverter implements EntityConverter<User, UserDTO> {
                 .collect(toList());
     }
 
-    private static Predicate<Permission> distinctBy(Function<Permission, ?> valueExtractor) {
+    private Predicate<Permission> distinctBy(Function<Permission, ?> valueExtractor) {
         Map<Object, Boolean> seen = new ConcurrentHashMap<>();
         return permission -> seen.putIfAbsent(valueExtractor.apply(permission), Boolean.TRUE) == null;
     }

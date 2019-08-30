@@ -14,12 +14,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
     private static final String SIGN_IN = "/users/signIn";
     private static final String SIGN_UP = "/users/signUp";
     private JwtConfig jwtConfig;
@@ -36,13 +36,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
     public JwtTokenProvider jwtTokenProvider(JwtUserDetailsService userDetailsService) {
         return new JwtTokenProvider(userDetailsService);
     }
 
     @Bean
-    public JwtUserDetailsService jwtUserDetailsService(UserService userService,
-                                                       JwtUserFactory jwtUserFactory) {
+    public JwtUserDetailsService jwtUserDetailsService(UserService userService, JwtUserFactory jwtUserFactory) {
         return new JwtUserDetailsService(userService, jwtUserFactory);
     }
 
@@ -60,7 +64,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.httpBasic().disable()
                 .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
                 .antMatchers(SIGN_IN).permitAll()
