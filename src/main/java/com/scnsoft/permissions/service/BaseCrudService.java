@@ -3,6 +3,7 @@ package com.scnsoft.permissions.service;
 import com.scnsoft.permissions.converter.EntityConverter;
 import com.scnsoft.permissions.dto.EntityDTO;
 import com.scnsoft.permissions.persistence.entity.PersistenceEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.CrudRepository;
 
 import java.io.Serializable;
@@ -11,14 +12,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+@RequiredArgsConstructor
 public abstract class BaseCrudService<T extends PersistenceEntity<R>, K extends EntityDTO, R extends Serializable> implements EntityService<K, R> {
-    private CrudRepository<T, R> repository;
-    private EntityConverter<T, K> converter;
-
-    public BaseCrudService(CrudRepository<T, R> repository, EntityConverter<T, K> converter) {
-        this.repository = repository;
-        this.converter = converter;
-    }
+    private final CrudRepository<T, R> repository;
+    private final EntityConverter<T, K> converter;
 
     @Override
     public void saveEntity(K entityDTO) {

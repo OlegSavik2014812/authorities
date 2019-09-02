@@ -4,15 +4,13 @@ import com.scnsoft.permissions.dto.personal.ProfileDTO;
 import com.scnsoft.permissions.persistence.entity.User;
 import com.scnsoft.permissions.persistence.entity.personal.Profile;
 import com.scnsoft.permissions.persistence.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class ProfileConverter implements EntityConverter<Profile, ProfileDTO> {
     private final UserRepository userRepository;
-
-    public ProfileConverter(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @Override
     public ProfileDTO toDTO(Profile entity) {
@@ -24,6 +22,7 @@ public class ProfileConverter implements EntityConverter<Profile, ProfileDTO> {
                 .phoneNumber(entity.getPhoneNumber())
                 .build();
     }
+
     @Override
     public Profile toPersistence(ProfileDTO entity) {
         Profile profile = new Profile();

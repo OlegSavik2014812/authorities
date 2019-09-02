@@ -4,6 +4,7 @@ import com.scnsoft.permissions.dto.dental.TreatmentDTO;
 import com.scnsoft.permissions.persistence.entity.dentistry.Treatment;
 import com.scnsoft.permissions.persistence.entity.dentistry.UserTooth;
 import com.scnsoft.permissions.persistence.repository.dentistry.UserToothRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -11,12 +12,9 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Component
+@RequiredArgsConstructor
 public class TreatmentConverter extends BaseDentalRequestConverter<Treatment, TreatmentDTO> {
-    private UserToothRepository userToothRepository;
-
-    public TreatmentConverter(UserToothRepository userToothRepository) {
-        this.userToothRepository = userToothRepository;
-    }
+    private final UserToothRepository userToothRepository;
 
     @Override
     public TreatmentDTO toDTO(Treatment entity) {

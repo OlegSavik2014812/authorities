@@ -4,6 +4,7 @@ import com.scnsoft.permissions.dto.UserDTO;
 import com.scnsoft.permissions.security.jwt.JwtTokenProvider;
 import com.scnsoft.permissions.security.jwt.JwtUser;
 import com.scnsoft.permissions.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class AuthenticationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationService.class);
     private static final String LOGIN_KEY = "login";
@@ -29,12 +31,6 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
-
-    public AuthenticationService(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, UserService userService) {
-        this.authenticationManager = authenticationManager;
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.userService = userService;
-    }
 
     public Map<Object, Object> signIn(UserDTO userDTO) {
         String login = userDTO.getLogin();

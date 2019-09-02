@@ -4,20 +4,16 @@ import com.scnsoft.permissions.dto.dental.ComplaintDTO;
 import com.scnsoft.permissions.persistence.entity.dentistry.Complaint;
 import com.scnsoft.permissions.persistence.entity.dentistry.UserTooth;
 import com.scnsoft.permissions.persistence.repository.dentistry.UserToothRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Component
+@RequiredArgsConstructor
 public class ComplaintConverter extends BaseDentalRequestConverter<Complaint, ComplaintDTO> {
-    private UserToothRepository userToothRepository;
-
-    @Autowired
-    public ComplaintConverter(UserToothRepository userToothRepository) {
-        this.userToothRepository = userToothRepository;
-    }
+    private final UserToothRepository userToothRepository;
 
     @Override
     public ComplaintDTO toDTO(Complaint entity) {

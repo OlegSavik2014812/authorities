@@ -3,10 +3,7 @@ package com.scnsoft.permissions.service;
 import com.scnsoft.permissions.converter.UserConverter;
 import com.scnsoft.permissions.dto.UserDTO;
 import com.scnsoft.permissions.persistence.entity.User;
-import com.scnsoft.permissions.persistence.entity.permission.AdditionalPermission;
-import com.scnsoft.permissions.persistence.entity.permission.CompositePermissionId;
 import com.scnsoft.permissions.persistence.entity.permission.Group;
-import com.scnsoft.permissions.persistence.entity.permission.Permission;
 import com.scnsoft.permissions.persistence.repository.UserRepository;
 import com.scnsoft.permissions.persistence.repository.permission.GroupRepository;
 import com.scnsoft.permissions.persistence.repository.permission.PermissionRepository;
@@ -77,31 +74,6 @@ public class UserService extends BaseCrudService<User, UserDTO, Long> {
             return user1;
         };
         return executeAssigment(updateGroup, userId);
-    }
-
-    public UserDTO updateAdditionalPermission(Long userId, Long permissionId, boolean isEnabled) {
-        UnaryOperator<User> assignPermission = user1 -> {
-            Permission permission = getById(permissionRepository, permissionId);
-            user1.getAdditionalPermissions().add(
-                    AdditionalPermission.builder()
-                            .id(new CompositePermissionId(userId, permissionId))
-                            .user(user1)
-                            .permission(permission)
-                            .isEnabled(isEnabled)
-                            .build()
-            );
-            return user1;
-        };
-        return executeAssigment(assignPermission, userId);
-    }
-
-    public UserDTO deletePermission(Long userId, Long permissionId) {
-        UnaryOperator<User> deletePermission = user1 -> {
-            user1.getAdditionalPermissions()
-                    .removeIf(additionalPermission -> additionalPermission.getPermission().getId().equals(permissionId));
-            return user1;
-        };
-        return executeAssigment(deletePermission, userId);
     }
 
     private UserDTO executeAssigment(UnaryOperator<User> assignAction, Long userId) {

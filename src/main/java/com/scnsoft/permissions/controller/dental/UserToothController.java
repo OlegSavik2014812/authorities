@@ -6,7 +6,7 @@ import com.scnsoft.permissions.dto.dental.UserToothDTO;
 import com.scnsoft.permissions.service.dentistry.ComplaintService;
 import com.scnsoft.permissions.service.dentistry.TreatmentService;
 import com.scnsoft.permissions.service.dentistry.UserToothService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,19 +16,11 @@ import java.util.Map;
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController(value = "user_teeth")
 @RequestMapping("user_teeth")
+@RequiredArgsConstructor
 public class UserToothController {
     private final UserToothService userToothService;
     private final ComplaintService complaintService;
     private final TreatmentService treatmentService;
-
-    @Autowired
-    public UserToothController(UserToothService userToothService,
-                               ComplaintService complaintService,
-                               TreatmentService treatmentService) {
-        this.userToothService = userToothService;
-        this.complaintService = complaintService;
-        this.treatmentService = treatmentService;
-    }
 
     @PostMapping()
     public ResponseEntity postUserTooth(@RequestBody UserToothDTO entity) {

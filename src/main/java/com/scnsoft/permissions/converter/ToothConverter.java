@@ -3,15 +3,13 @@ package com.scnsoft.permissions.converter;
 import com.scnsoft.permissions.dto.dental.ToothDTO;
 import com.scnsoft.permissions.persistence.entity.dentistry.Tooth;
 import com.scnsoft.permissions.persistence.repository.dentistry.ToothRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class ToothConverter implements EntityConverter<Tooth, ToothDTO> {
     private final ToothRepository toothRepository;
-
-    public ToothConverter(ToothRepository toothRepository) {
-        this.toothRepository = toothRepository;
-    }
 
     @Override
     public ToothDTO toDTO(Tooth entity) {

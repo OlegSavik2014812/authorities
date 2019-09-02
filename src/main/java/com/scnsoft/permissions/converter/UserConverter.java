@@ -6,6 +6,7 @@ import com.scnsoft.permissions.persistence.entity.permission.AdditionalPermissio
 import com.scnsoft.permissions.persistence.entity.permission.Group;
 import com.scnsoft.permissions.persistence.entity.permission.Permission;
 import com.scnsoft.permissions.persistence.repository.permission.GroupRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -23,12 +24,9 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 @Component
+@RequiredArgsConstructor
 public class UserConverter implements EntityConverter<User, UserDTO> {
     private final GroupRepository groupRepository;
-
-    public UserConverter(GroupRepository repository) {
-        this.groupRepository = repository;
-    }
 
     @Override
     public UserDTO toDTO(User entity) {

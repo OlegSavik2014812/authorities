@@ -5,8 +5,8 @@ import com.scnsoft.permissions.persistence.entity.dentistry.Tooth;
 import com.scnsoft.permissions.persistence.entity.dentistry.UserTooth;
 import com.scnsoft.permissions.persistence.repository.UserRepository;
 import com.scnsoft.permissions.persistence.repository.dentistry.ToothRepository;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -19,22 +19,12 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class UserToothConverter implements EntityConverter<UserTooth, UserToothDTO> {
     private final TreatmentConverter treatmentConverter;
     private final ComplaintConverter complaintConverter;
     private final ToothRepository toothRepository;
     private final UserRepository userRepository;
-
-    @Autowired
-    public UserToothConverter(ComplaintConverter complaintConverter,
-                              TreatmentConverter treatmentConverter,
-                              ToothRepository toothRepository,
-                              UserRepository userRepository) {
-        this.complaintConverter = complaintConverter;
-        this.treatmentConverter = treatmentConverter;
-        this.toothRepository = toothRepository;
-        this.userRepository = userRepository;
-    }
 
     @Override
     public UserToothDTO toDTO(UserTooth entity) {

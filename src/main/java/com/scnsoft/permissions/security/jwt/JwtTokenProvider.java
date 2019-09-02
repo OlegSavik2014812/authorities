@@ -24,8 +24,8 @@ public class JwtTokenProvider {
     private String secret;
     private final JwtUserDetailsService userDetailsService;
 
-    public JwtTokenProvider(JwtUserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
+    public JwtTokenProvider(JwtUserDetailsService jwtUserDetailsService) {
+        this.userDetailsService = jwtUserDetailsService;
     }
 
     @PostConstruct
@@ -53,7 +53,7 @@ public class JwtTokenProvider {
     }
 
     boolean validateToken(String token) {
-        if (Strings.isBlank(token)) {
+        if (!Strings.isBlank(token)) {
             return false;
         }
         try {
