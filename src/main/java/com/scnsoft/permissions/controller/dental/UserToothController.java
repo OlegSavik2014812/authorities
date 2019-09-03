@@ -24,8 +24,8 @@ public class UserToothController {
 
     @PostMapping()
     public ResponseEntity postUserTooth(@RequestBody UserToothDTO entity) {
-        Long save = userToothService.save(entity);
-        return ResponseEntity.ok(Map.of("userToothId", save));
+        UserToothDTO save1 = userToothService.save(entity);
+        return ResponseEntity.ok(Map.of("userTooth", save1));
     }
 
     @PostMapping("/complain")

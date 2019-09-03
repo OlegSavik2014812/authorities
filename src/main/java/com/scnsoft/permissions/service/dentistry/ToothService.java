@@ -21,7 +21,7 @@ public class ToothService extends BaseCrudService<Tooth, ToothDTO, Long> {
     }
 
     @Override
-    public void saveEntity(ToothDTO entityDTO) {
+    public ToothDTO save(ToothDTO entityDTO) {
         throw new UnsupportedOperationException("Unable to create another tooth. Human jaw can't support more than 32 teeth");
     }
 

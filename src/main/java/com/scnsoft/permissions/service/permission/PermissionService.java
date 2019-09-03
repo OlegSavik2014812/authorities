@@ -31,7 +31,7 @@ public class PermissionService {
     private final GroupConverter groupConverter;
 
     public UserDTO assignPermissionToUser(Long userId, Long permissionId, boolean isEnabled) {
-        UnaryOperator<User> assignPermission = user1 -> {
+        UnaryOperator<User> assignPermissionAction = user1 -> {
             Permission permission = permissionRepository.findById(permissionId).orElseThrow(() -> new NullPointerException("No such entity"));
             user1.getAdditionalPermissions().add(
                     AdditionalPermission.builder()
@@ -43,44 +43,44 @@ public class PermissionService {
             );
             return user1;
         };
-        return executeGroupPermissionAction(userConverter, assignPermission, userRepository, userId);
+        return executePermissionAction(userRepository, userId, userConverter, assignPermissionAction);
     }
 
     public UserDTO releasePermissionFromUser(Long userId, Long permissionId) {
-        UnaryOperator<User> releasePermission = user1 -> {
+        UnaryOperator<User> releasePermissionAction = user1 -> {
             user1.getAdditionalPermissions()
                     .removeIf(additionalPermission -> additionalPermission.getPermission().getId().equals(permissionId));
             return user1;
         };
-        return executeGroupPermissionAction(userConverter, releasePermission, userRepository, userId);
+        return executePermissionAction(userRepository, userId, userConverter, releasePermissionAction);
     }
 
-
     public GroupDTO assignPermissionToGroup(Long groupId, Long permissionId) {
-        UnaryOperator<Group> assignPermission = group -> {
+        UnaryOperator<Group> assignPermissionAction = group -> {
             Permission permission = permissionRepository.findById(permissionId)
                     .orElseThrow(() -> new NullPointerException("No such permission"));
             group.getPermissions().add(permission);
             return group;
         };
-        return executeGroupPermissionAction(groupConverter, assignPermission, groupRepository, groupId);
+        return executePermissionAction(groupRepository, groupId, groupConverter, assignPermissionAction);
     }
 
     public GroupDTO releasePermissionFromGroup(Long groupId, Long permissionId) {
-        UnaryOperator<Group> releasePermission = group -> {
+        UnaryOperator<Group> releasePermissionAction = group -> {
             group.getPermissions().removeIf(permission1 -> permission1.getId().equals(permissionId));
             return group;
         };
-        return executeGroupPermissionAction(groupConverter, releasePermission, groupRepository, groupId);
+        return executePermissionAction(groupRepository, groupId, groupConverter, releasePermissionAction);
     }
 
     private <T extends PersistenceEntity<Long>,
-            K extends EntityDTO<Long>> K executeGroupPermissionAction(EntityConverter<T, K> converter,
-                                                                      UnaryOperator<T> action,
-                                                                      CrudRepository<T, Long> crudRepository, Long id) {
-        T group = crudRepository.findById(id).orElseThrow(() -> new NullPointerException("No such entity"));
-        T apply = action.apply(group);
-        T save = crudRepository.save(apply);
-        return converter.toDTO(save);
+            K extends EntityDTO<Long>> K executePermissionAction(CrudRepository<T, Long> entityRepository, Long entityId,
+                                                                 EntityConverter<T, K> converter,
+                                                                 UnaryOperator<T> permissionAction) {
+        T entity = entityRepository.findById(entityId)
+                .orElseThrow(() -> new NullPointerException("No such entity"));
+        T assignedEntity = permissionAction.apply(entity);
+        T savedEntity = entityRepository.save(assignedEntity);
+        return converter.toDTO(savedEntity);
     }
 }

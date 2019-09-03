@@ -20,17 +20,13 @@ public class RankService extends BaseCrudService<Rank, RankDTO, Long> {
 
     public RankDTO vote(Long rankId, boolean isLike) {
         Rank rank = rankRepository.findById(rankId).orElseGet(Rank::new);
+
         Long numberOfVotes = rank.getNumberOfVotes();
         Long statistic = rank.getStatistic();
-        if (isLike) {
-            numberOfVotes = numberOfVotes + 1;
-            statistic = statistic + 1;
-        } else {
-            numberOfVotes = numberOfVotes + 1;
-            statistic = statistic - 1;
-        }
-        rank.setNumberOfVotes(numberOfVotes);
-        rank.setStatistic(statistic);
+
+        rank.setNumberOfVotes(numberOfVotes + 1);
+        rank.setStatistic(isLike ? statistic + 1 : statistic - 1);
+
         Rank save = rankRepository.save(rank);
         return rankConverter.toDTO(save);
     }

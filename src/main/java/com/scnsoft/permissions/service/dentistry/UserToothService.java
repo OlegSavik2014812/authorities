@@ -17,12 +17,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
+import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -32,6 +28,7 @@ public class UserToothService extends BaseCrudService<UserTooth, UserToothDTO, L
     private final UserToothConverter userToothConverter;
     private final ComplaintConverter complaintConverter;
     private final TreatmentConverter treatmentConverter;
+    private final LongBinaryOperator idSupplier = (toothNumber, userId) -> Long.parseLong(toothNumber + "" + userId);
 
     @Autowired
     public UserToothService(UserToothRepository userToothRepository,
@@ -55,11 +52,17 @@ public class UserToothService extends BaseCrudService<UserTooth, UserToothDTO, L
                 .orElse(Collections.emptyList());
     }
 
-    public Long save(UserToothDTO userToothDTO) {
-        if (Objects.isNull(userToothDTO)) {
-            return 0L;
+    @Override
+    public UserToothDTO save(UserToothDTO userToothDTO) {
+        long l = idSupplier.applyAsLong(userToothDTO.getToothNumber(), userToothDTO.getUserId());
+        if (l < 11L) {
+            throw new UnsupportedOperationException("Unable to save user tooth, invalid id");
         }
         UserTooth userTooth = Optional.of(userToothDTO)
+                .map(userToothDTO1 -> {
+                    userToothDTO1.setId(l);
+                    return userToothDTO1;
+                })
                 .map(userToothConverter::toPersistence)
                 .map(userToothRepository::save)
                 .orElseThrow(() -> new UnsupportedOperationException("Unable to save user tooth"));
@@ -69,11 +72,11 @@ public class UserToothService extends BaseCrudService<UserTooth, UserToothDTO, L
         UnaryOperator<ComplaintDTO> complaintUserToothIdSetter = getUserToothIdSetter(id);
         UnaryOperator<TreatmentDTO> treatmentUserToothIdSetter = getUserToothIdSetter(id);
 
-        convert(userToothDTO::getComplaints, complaintUserToothIdSetter.andThen(complaintConverter::toPersistence), userTooth::setComplaints);
-        convert(userToothDTO::getTreatments, treatmentUserToothIdSetter.andThen(treatmentConverter::toPersistence), userTooth::setTreatments);
+        setDentalRequestList(userToothDTO::getComplaints, complaintUserToothIdSetter.andThen(complaintConverter::toPersistence), userTooth::setComplaints);
+        setDentalRequestList(userToothDTO::getTreatments, treatmentUserToothIdSetter.andThen(treatmentConverter::toPersistence), userTooth::setTreatments);
 
         UserTooth complainedTooth = userToothRepository.save(userTooth);
-        return complainedTooth.getId();
+        return userToothConverter.toDTO(complainedTooth);
     }
 
     private <K extends BaseDentalRequestDTO> UnaryOperator<K> getUserToothIdSetter(Long userToothId) {
@@ -83,7 +86,7 @@ public class UserToothService extends BaseCrudService<UserTooth, UserToothDTO, L
         };
     }
 
-    private <T extends BaseDentalRequest, K extends BaseDentalRequestDTO> void convert(Supplier<List<K>> supplier, Function<K, T> mapper, Consumer<List<T>> consumer) {
+    private <T extends BaseDentalRequest, K extends BaseDentalRequestDTO> void setDentalRequestList(Supplier<List<K>> supplier, Function<K, T> mapper, Consumer<List<T>> consumer) {
         List<K> dtoItems = supplier.get();
         if (CollectionUtils.isNotEmpty(dtoItems)) {
             dtoItems.stream()

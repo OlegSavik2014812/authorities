@@ -18,10 +18,12 @@ public abstract class BaseCrudService<T extends PersistenceEntity<R>, K extends 
     private final EntityConverter<T, K> converter;
 
     @Override
-    public void saveEntity(K entityDTO) {
-        Optional.ofNullable(entityDTO)
+    public K save(K entityDTO) {
+        return Optional.ofNullable(entityDTO)
                 .map(converter::toPersistence)
-                .ifPresent(repository::save);
+                .map(repository::save)
+                .map(converter::toDTO)
+                .orElseThrow(UnsupportedOperationException::new);
     }
 
     @Override

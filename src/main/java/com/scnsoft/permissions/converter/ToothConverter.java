@@ -20,7 +20,7 @@ public class ToothConverter implements EntityConverter<Tooth, ToothDTO> {
     }
 
     @Override
-    public Tooth toPersistence(ToothDTO entity) {
-        return toothRepository.findById(entity.getId()).orElse(null);
+    public Tooth toPersistence(ToothDTO entityDTO) {
+        return toothRepository.findById(entityDTO.getId()).orElse(null);
     }
 }

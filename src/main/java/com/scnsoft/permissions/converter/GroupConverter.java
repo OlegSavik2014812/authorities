@@ -43,15 +43,15 @@ public class GroupConverter implements EntityConverter<Group, GroupDTO> {
     }
 
     @Override
-    public Group toPersistence(GroupDTO entity) {
+    public Group toPersistence(GroupDTO entityDTO) {
         Group group = new Group();
 
-        Optional.ofNullable(entity.getId())
+        Optional.ofNullable(entityDTO.getId())
                 .ifPresent(group::setId);
-        group.setName(entity.getName());
+        group.setName(entityDTO.getName());
 
-        setUpList(entity.getPermissionNames(), permissionRepository::findPermissionsByNames, group::setPermissions);
-        setUpList(entity.getUserNames(), userRepository::findUsersByNames, group::setUsers);
+        setUpList(entityDTO.getPermissionNames(), permissionRepository::findPermissionsByNames, group::setPermissions);
+        setUpList(entityDTO.getUserNames(), userRepository::findUsersByNames, group::setUsers);
 
         return group;
     }

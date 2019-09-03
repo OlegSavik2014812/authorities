@@ -29,4 +29,9 @@ public class PermissionController {
     public GroupDTO assignGroupPermission(@RequestParam Long groupId, @RequestParam Long permissionsId) {
         return permissionService.assignPermissionToGroup(groupId, permissionsId);
     }
+
+    @GetMapping(path = "/group/release", params = {"groupId", "permissionsId"})
+    public GroupDTO releaseGroupPermission(@RequestParam Long groupId, @RequestParam Long permissionsId) {
+        return permissionService.releasePermissionFromGroup(groupId, permissionsId);
+    }
 }

@@ -14,7 +14,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -34,22 +33,18 @@ public class UserToothConverter implements EntityConverter<UserTooth, UserToothD
                 .toothNumber(tooth.getId())
                 .toothType(tooth.getType().toString())
                 .userId(entity.getUser().getId());
-
         setDentalReq(entity::getComplaints, complaintConverter::toDTO, userToothDTOBuilder::complaints);
         setDentalReq(entity::getTreatments, treatmentConverter::toDTO, userToothDTOBuilder::treatments);
         return userToothDTOBuilder.build();
     }
 
     @Override
-    public UserTooth toPersistence(UserToothDTO entity) {
+    public UserTooth toPersistence(UserToothDTO entityDTO) {
         UserTooth userTooth = new UserTooth();
-        Long toothNumber = entity.getToothNumber();
-        Long userId = entity.getUserId();
-        toothRepository.findById(toothNumber).ifPresent(userTooth::setTooth);
-        userRepository.findById(userId).ifPresent(userTooth::setUser);
-        LongSupplier longSupplier = () -> Long.parseLong(toothNumber + "" + userId);
-        Long id = Optional.ofNullable(entity.getId()).orElseGet(longSupplier::getAsLong);
+        Long id = entityDTO.getId();
         userTooth.setId(id);
+        toothRepository.findById(entityDTO.getToothNumber()).ifPresent(userTooth::setTooth);
+        userRepository.findById(entityDTO.getUserId()).ifPresent(userTooth::setUser);
         return userTooth;
     }
 

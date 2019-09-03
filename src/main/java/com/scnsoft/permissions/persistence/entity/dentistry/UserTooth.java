@@ -16,7 +16,6 @@ import java.util.List;
 @Table(name = "user_teeth")
 public class UserTooth implements PersistenceEntity<Long> {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotNull

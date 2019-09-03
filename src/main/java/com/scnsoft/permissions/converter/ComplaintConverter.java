@@ -21,10 +21,10 @@ public class ComplaintConverter extends BaseDentalRequestConverter<Complaint, Co
     }
 
     @Override
-    public Complaint toPersistence(ComplaintDTO entity) {
-        UserTooth tooth = userToothRepository.findById(entity.getUserToothId()).orElseGet(UserTooth::new);
-        LocalDateTime date = Optional.ofNullable(entity.getDate()).orElseGet(LocalDateTime::now);
-        String problem = entity.getDescription();
+    public Complaint toPersistence(ComplaintDTO entityDTO) {
+        UserTooth tooth = userToothRepository.findById(entityDTO.getUserToothId()).orElseGet(UserTooth::new);
+        LocalDateTime date = Optional.ofNullable(entityDTO.getDate()).orElseGet(LocalDateTime::now);
+        String problem = entityDTO.getDescription();
 
         return Complaint.complain()
                 .about(tooth)

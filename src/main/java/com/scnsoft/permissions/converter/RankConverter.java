@@ -22,12 +22,12 @@ public class RankConverter implements EntityConverter<Rank, RankDTO> {
     }
 
     @Override
-    public Rank toPersistence(RankDTO entity) {
+    public Rank toPersistence(RankDTO entityDTO) {
         Rank rank = new Rank();
-        rank.setId(entity.getId());
-        rank.setNumberOfVotes(entity.getNumberOfVotes());
-        rank.setStatistic(entity.getStatistic());
-        User user = userRepository.findById(entity.getId()).orElseThrow(RuntimeException::new);
+        rank.setId(entityDTO.getId());
+        rank.setNumberOfVotes(entityDTO.getNumberOfVotes());
+        rank.setStatistic(entityDTO.getStatistic());
+        User user = userRepository.findById(entityDTO.getId()).orElseThrow(RuntimeException::new);
         rank.setUser(user);
         return rank;
     }

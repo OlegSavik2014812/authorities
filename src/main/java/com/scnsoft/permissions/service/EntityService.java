@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EntityService<T extends EntityDTO, K extends Serializable> {
-    void saveEntity(T e);
+    T save(T e);
 
     Optional<T> findById(K id);
 

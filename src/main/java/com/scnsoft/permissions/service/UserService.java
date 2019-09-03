@@ -6,7 +6,6 @@ import com.scnsoft.permissions.persistence.entity.User;
 import com.scnsoft.permissions.persistence.entity.permission.Group;
 import com.scnsoft.permissions.persistence.repository.UserRepository;
 import com.scnsoft.permissions.persistence.repository.permission.GroupRepository;
-import com.scnsoft.permissions.persistence.repository.permission.PermissionRepository;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,18 +19,15 @@ public class UserService extends BaseCrudService<User, UserDTO, Long> {
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
     private final UserConverter userConverter;
-    private final PermissionRepository permissionRepository;
     private final BCryptPasswordEncoder encoder;
 
     public UserService(UserRepository userRepository,
                        GroupRepository groupRepository,
-                       PermissionRepository permissionRepository,
                        UserConverter userConverter,
                        BCryptPasswordEncoder encoder) {
         super(userRepository, userConverter);
         this.userRepository = userRepository;
         this.groupRepository = groupRepository;
-        this.permissionRepository = permissionRepository;
         this.userConverter = userConverter;
         this.encoder = encoder;
     }
@@ -43,17 +39,15 @@ public class UserService extends BaseCrudService<User, UserDTO, Long> {
                     userDTO1.setPassword(encrypt(password));
                     return userDTO1;
                 })
-                .map(userConverter::toPersistence)
-                .map(userRepository::save)
-                .map(userConverter::toDTO)
+                .map(super::save)
                 .orElseThrow(() -> new NullPointerException("Unable to save user"));
     }
 
     private String encrypt(String string) {
-        return Optional.ofNullable(string)
-                .filter(Strings::isNotBlank)
-                .map(encoder::encode)
-                .orElseThrow(() -> new NullPointerException("Password is empty"));
+        if (Strings.isBlank(string)) {
+            throw new NullPointerException("Password is empty");
+        }
+        return encoder.encode(string);
     }
 
     public boolean existByLogin(String userLogin) {

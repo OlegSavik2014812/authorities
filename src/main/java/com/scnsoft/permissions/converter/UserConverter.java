@@ -69,15 +69,15 @@ public class UserConverter implements EntityConverter<User, UserDTO> {
     }
 
     @Override
-    public User toPersistence(UserDTO entity) {
+    public User toPersistence(UserDTO entityDTO) {
         User user = new User();
-        Optional.ofNullable(entity.getId())
+        Optional.ofNullable(entityDTO.getId())
                 .ifPresent(user::setId);
 
-        user.setLogin(requireNonNull(entity.getLogin()));
-        user.setPassword(requireNonNull(entity.getPassword()));
+        user.setLogin(requireNonNull(entityDTO.getLogin()));
+        user.setPassword(requireNonNull(entityDTO.getPassword()));
 
-        Optional.ofNullable(entity.getGroupName())
+        Optional.ofNullable(entityDTO.getGroupName())
                 .filter(s -> !s.trim().isEmpty())
                 .flatMap(groupRepository::findGroupByName)
                 .ifPresent(user::setGroup);
