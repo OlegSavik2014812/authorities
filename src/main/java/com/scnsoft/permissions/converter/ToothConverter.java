@@ -21,6 +21,6 @@ public class ToothConverter implements EntityConverter<Tooth, ToothDTO> {
 
     @Override
     public Tooth toPersistence(ToothDTO entityDTO) {
-        return toothRepository.findById(entityDTO.getId()).orElse(null);
+        throw new UnsupportedOperationException("Unable to convert tooth to persistence entity");
     }
 }

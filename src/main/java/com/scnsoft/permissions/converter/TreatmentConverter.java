@@ -25,11 +25,13 @@ public class TreatmentConverter extends BaseDentalRequestConverter<Treatment, Tr
 
     @Override
     public Treatment toPersistence(TreatmentDTO entityDTO) {
-        UserTooth tooth = userToothRepository.findById(entityDTO.getUserToothId()).orElseGet(UserTooth::new);
-        LocalDateTime date = Optional.ofNullable(entityDTO.getDate()).orElseGet(LocalDateTime::now);
+        UserTooth tooth = userToothRepository.findById(entityDTO.getUserToothId())
+                .orElseThrow(NullPointerException::new);
+        LocalDateTime date = Optional.ofNullable(entityDTO.getDate())
+                .orElseGet(LocalDateTime::now);
         String operation = entityDTO.getDescription();
-        BigDecimal price = entityDTO.getPrice();
 
+        BigDecimal price = entityDTO.getPrice();
         return Treatment.treat()
                 .describe(operation)
                 .what(tooth)

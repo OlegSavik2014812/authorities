@@ -7,12 +7,18 @@ import com.scnsoft.permissions.persistence.entity.permission.Group;
 import com.scnsoft.permissions.persistence.repository.UserRepository;
 import com.scnsoft.permissions.persistence.repository.permission.GroupRepository;
 import org.apache.logging.log4j.util.Strings;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class UserService extends BaseCrudService<User, UserDTO, Long> {
@@ -68,6 +74,17 @@ public class UserService extends BaseCrudService<User, UserDTO, Long> {
             return user1;
         };
         return executeAssigment(updateGroup, userId);
+    }
+
+    public List<UserDTO> findWithPermission(String permissionName) {
+        Iterable<User> usersByNames = userRepository.findUsersByAdditionalPermissionsWithPermission(List.of(permissionName));
+        return StreamSupport.stream(usersByNames.spliterator(), false).map(userConverter::toDTO).collect(Collectors.toList());
+    }
+
+    public Page<UserDTO> findAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> all = userRepository.findAll(pageable);
+        return all.map(userConverter::toDTO);
     }
 
     private UserDTO executeAssigment(UnaryOperator<User> assignAction, Long userId) {
