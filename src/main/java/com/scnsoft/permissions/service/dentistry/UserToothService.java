@@ -45,10 +45,8 @@ public class UserToothService extends BaseCrudService<UserTooth, UserToothDTO, L
     public List<UserToothDTO> getUserTeeth(Long userId) {
         return Optional.ofNullable(userId)
                 .map(userToothRepository::findAllByUserId)
-                .map(iterable ->
-                        StreamSupport.stream(iterable.spliterator(), false)
-                                .map(userToothConverter::toDTO)
-                                .collect(Collectors.toList()))
+                .map(list ->
+                        list.stream().map(userToothConverter::toDTO).collect(Collectors.toList()))
                 .orElse(Collections.emptyList());
     }
 

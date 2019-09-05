@@ -8,6 +8,7 @@ import com.scnsoft.permissions.persistence.repository.UserRepository;
 import com.scnsoft.permissions.persistence.repository.permission.GroupRepository;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
@@ -17,8 +18,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Service
 public class UserService extends BaseCrudService<User, UserDTO, Long> {
@@ -76,9 +75,11 @@ public class UserService extends BaseCrudService<User, UserDTO, Long> {
         return executeAssigment(updateGroup, userId);
     }
 
-    public List<UserDTO> findWithPermission(String permissionName) {
-        Iterable<User> usersByNames = userRepository.findUsersByAdditionalPermissionsWithPermission(List.of(permissionName));
-        return StreamSupport.stream(usersByNames.spliterator(), false).map(userConverter::toDTO).collect(Collectors.toList());
+    public Page<UserDTO> findWithPermission(int page, int size, String permission) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Long> userIdsByPermissions = userRepository.findUserIdsByPermissions(List.of(permission), pageable);
+        List<User> users = userRepository.findAllById(userIdsByPermissions.getContent());
+        return new PageImpl<>(users, pageable, userIdsByPermissions.getTotalElements()).map(userConverter::toDTO);
     }
 
     public Page<UserDTO> findAll(int page, int size) {

@@ -51,9 +51,17 @@ public class UserController {
         return ResponseEntity.ok(totalPages1);
     }
 
-    @GetMapping("/permission")
-    public List<UserDTO> getByPermission(@RequestParam String name) {
-        return userService.findWithPermission(name.toUpperCase());
+    @GetMapping(path = "/permission",params = {"page", "size","name"})
+    public ResponseEntity getByPermission(@RequestParam int page, @RequestParam int size, @RequestParam String name) {
+        Page<UserDTO> all = userService.findWithPermission( page, size,name);
+        int totalPages = all.getTotalPages();
+        long totalElements = all.getTotalElements();
+        List<UserDTO> content = all.getContent();
+        Map<String, Object> totalPages1 =
+                Map.of("totalPages", totalPages,
+                        "totalElements", totalElements,
+                        "users", content);
+        return ResponseEntity.ok(totalPages1);
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")

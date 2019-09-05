@@ -1,6 +1,5 @@
 package com.scnsoft.permissions.converter;
 
-import com.google.common.collect.Lists;
 import com.scnsoft.permissions.dto.security.GroupDTO;
 import com.scnsoft.permissions.persistence.entity.User;
 import com.scnsoft.permissions.persistence.entity.permission.Group;
@@ -57,12 +56,11 @@ public class GroupConverter implements EntityConverter<Group, GroupDTO> {
     }
 
     private <T> void setUpList(List<String> stringEntitySource,
-                               Function<Iterable<String>, Iterable<T>> stringEntityMapper,
+                               Function<Iterable<String>, List<T>> stringEntityMapper,
                                Consumer<List<T>> entityConsumer) {
         Optional.ofNullable(stringEntitySource)
                 .filter(strings -> !strings.isEmpty())
                 .map(stringEntityMapper)
-                .map(Lists::newArrayList)
                 .ifPresent(entityConsumer);
     }
 }

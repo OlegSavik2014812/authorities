@@ -56,6 +56,7 @@ public class UserConverter implements EntityConverter<User, UserDTO> {
         Map<Permission, Boolean> resolvedAdditionalPermissions = nonNull(additionalPermissions) ?
                 additionalPermissions.stream()
                         .collect(toMap(AdditionalPermission::getPermission, AdditionalPermission::isEnabled)) : emptyMap();
+
         return Stream.concat(groupPermissionsStream, resolvedAdditionalPermissions.keySet().stream())
                 .filter(distinctBy(Permission::getName))
                 .filter(permission -> resolvedAdditionalPermissions.getOrDefault(permission, true))

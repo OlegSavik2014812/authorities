@@ -6,20 +6,24 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+import java.util.List;
 import java.util.Optional;
 
+
 @RepositoryRestResource(collectionResourceRel = "users", path = "users")
-public interface UserRepository extends PagingAndSortingRepository<User, Long> {
+public interface UserRepository extends PagingAndSortingRepository<User, Long>, UserPermissionRepository {
 
     Optional<User> findUserByLogin(@Param("login") String login);
 
     boolean existsByLogin(@Param("login") String login);
 
     @Query("select user from User user where login in :logins")
-    Iterable<User> findUsersByNames(@Param("logins") Iterable<String> loginList);
+    List<User> findUsersByNames(@Param("logins") Iterable<String> loginList);
 
-    @Query("select user from User user join user.additionalPermissions perms on ")
-    Iterable<User> findUsersByAdditionalPermissionsWithPermission(@Param("permissions") Iterable<String> permissions);
+    @Override
+    List<User> findAllById(@Param("ids") Iterable<Long> ids);
+    /*@Query("select user from User user where :permissions  =any (select s from perms)")
+    List<User> findUsersByAdditionalPermissionsWithPermission(@Param("permissions") Iterable<String> permissions);*/
 }
 /*get users by special permission
 
