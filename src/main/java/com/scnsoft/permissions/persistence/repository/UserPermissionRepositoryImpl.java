@@ -27,19 +27,16 @@ public class UserPermissionRepositoryImpl implements UserPermissionRepository {
                     "\t\t FROM user_perms.users as users \n" +
                     "\t\t inner join user_perms.groups grps on users.group_id = grps.id\n" +
                     "\t\t inner join user_perms.group_permissions grp_perms on grp_perms.group_id = grps.id\n" +
-                    "\t\t inner join user_perms.permissions perms on perms.id = grp_perms.permission_id \n" +
-                    "\t\t where perms.name in (?1)\n" +
+                    "\t\t inner join user_perms.permissions perms on perms.id = grp_perms.permission_id and perms.name in (?1)\n" +
                     "\t\t ) x\n" +
                     "\t left join (\n" +
                     "\t\t select users.id as additional_perm_user_id, usr_perms.enabled\n" +
                     "\t\t from user_perms.users as users\n" +
                     "\t\t inner join user_perms.user_permissions usr_perms on usr_perms.user_id = users.id \n" +
-                    "\t\t inner join user_perms.permissions perms on usr_perms.permission_id = perms.id \n" +
-                    "\t\t where perms.name in (?1)\n" +
-                    "    ) y \n" +
+                    "\t\t inner join user_perms.permissions perms on usr_perms.permission_id = perms.id and perms.name in (?1) \n" +
+                    ") y \n" +
                     "on x.id  = y.additional_perm_user_id\n" +
                     "where enabled is null or enabled = true ";
-
     private static final String ADDITIONAL_PERMISSIONS_USERS =
             "select users.id as additional_perm_user_id\n" +
                     "from user_perms.users as users\n" +
@@ -50,9 +47,7 @@ public class UserPermissionRepositoryImpl implements UserPermissionRepository {
     public UserPermissionRepositoryImpl(EntityManager manager) {
         queryMapper = (queryString, args) -> {
             Query query = manager.createNativeQuery(queryString);
-            for (Map.Entry<Integer, Object> argument : args.entrySet()) {
-                query.setParameter(argument.getKey(), argument.getValue());
-            }
+            args.forEach(query::setParameter);
             return query;
         };
     }
