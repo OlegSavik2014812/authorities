@@ -11,13 +11,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.UnaryOperator;
 
 @Service
 public class UserService extends BaseCrudService<User, UserDTO, Long> {
@@ -37,6 +35,7 @@ public class UserService extends BaseCrudService<User, UserDTO, Long> {
         this.encoder = encoder;
     }
 
+    @Override
     public UserDTO save(UserDTO userDTO) {
         return Optional.ofNullable(userDTO)
                 .map(userDTO1 -> {
@@ -65,37 +64,35 @@ public class UserService extends BaseCrudService<User, UserDTO, Long> {
     }
 
     public UserDTO updateGroup(Long userId, Long groupId) {
-        UnaryOperator<User> updateGroup = user1 -> {
-            Group group = Optional.ofNullable(groupId)
-                    .flatMap(groupRepository::findById)
-                    .orElse(null);
-            user1.setGroup(group);
-            return user1;
-        };
-        return executeAssigment(updateGroup, userId);
+        User user = userRepository.findById(userId).orElseThrow(() -> new NullPointerException("No such entity"));
+        Group group = Optional.ofNullable(groupId)
+                .flatMap(groupRepository::findById)
+                .orElse(null);
+        user.setGroup(group);
+        User savedUser = userRepository.save(user);
+        return userConverter.toDTO(savedUser);
     }
 
-    public Page<UserDTO> findWithPermission(int page, int size, String permission) {
+    public Page<UserDTO> findWithAssignedPermissions(int page, int size, List<String> permissions) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Long> userIdsByPermissions = userRepository.findUserIdsByPermissions(List.of(permission), pageable);
+        Page<Long> userIdsByAssignedPermissions = userRepository.findUserIdsByAssignedPermissions(permissions, pageable);
+        List<User> allById = userRepository.findAllById(userIdsByAssignedPermissions.getContent());
+
+        return new PageImpl<>(allById, pageable, userIdsByAssignedPermissions.getTotalElements())
+                .map(userConverter::toDTO);
+    }
+
+    public Page<UserDTO> findWithPermission(int page, int size, List<String> permissions) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Long> userIdsByPermissions = userRepository.findUserIdsByPermissions(permissions, pageable);
         List<User> users = userRepository.findAllById(userIdsByPermissions.getContent());
-        return new PageImpl<>(users, pageable, userIdsByPermissions.getTotalElements()).map(userConverter::toDTO);
+        return new PageImpl<>(users, pageable, userIdsByPermissions.getTotalElements())
+                .map(userConverter::toDTO);
     }
 
     public Page<UserDTO> findAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<User> all = userRepository.findAll(pageable);
-        return all.map(userConverter::toDTO);
-    }
-
-    private UserDTO executeAssigment(UnaryOperator<User> assignAction, Long userId) {
-        User user = getById(userRepository, userId);
-        User assignedUser = assignAction.apply(user);
-        User savedUser = userRepository.save(assignedUser);
-        return userConverter.toDTO(savedUser);
-    }
-
-    private <T> T getById(CrudRepository<T, Long> repository, Long id) {
-        return repository.findById(id).orElseThrow(() -> new NullPointerException("No such entity"));
+        return userRepository.findAll(pageable)
+                .map(userConverter::toDTO);
     }
 }

@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface UserPermissionRepository {
     Page<Long> findUserIdsByPermissions(List<String> permissions, Pageable pageable);
+    Page<Long> findUserIdsByAssignedPermissions(List<String> permissions, Pageable pageable);
 }

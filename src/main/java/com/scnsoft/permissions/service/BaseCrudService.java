@@ -39,6 +39,7 @@ public abstract class BaseCrudService<T extends PersistenceEntity<R>, K extends 
                 .ifPresent(repository::deleteById);
     }
 
+    @Override
     public List<K> findAll() {
         return StreamSupport
                 .stream(repository.findAll().spliterator(), false)

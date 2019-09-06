@@ -16,6 +16,9 @@ import java.util.Map;
 @RequestMapping("users")
 @RequiredArgsConstructor
 public class UserController {
+    private static final String TOTAL_PAGES = "totalPages";
+    private static final String TOTAL_ELEMENTS = "totalElements";
+    private static final String USERS = "users";
     private final UserService userService;
 
     @GetMapping(value = "{id}")
@@ -41,26 +44,29 @@ public class UserController {
     @GetMapping(params = {"page", "size"})
     public ResponseEntity getAll(@RequestParam int page, @RequestParam int size) {
         Page<UserDTO> all = userService.findAll(page, size);
-        int totalPages = all.getTotalPages();
-        long totalElements = all.getTotalElements();
-        List<UserDTO> content = all.getContent();
-        Map<String, Object> totalPages1 =
-                Map.of("totalPages", totalPages,
-                        "totalElements", totalElements,
-                        "users", content);
-        return ResponseEntity.ok(totalPages1);
+        return getUsersResponse(all);
     }
 
-    @GetMapping(path = "/permission",params = {"page", "size","name"})
+    @GetMapping(path = "/permission", params = {"page", "size", "name"})
     public ResponseEntity getByPermission(@RequestParam int page, @RequestParam int size, @RequestParam String name) {
-        Page<UserDTO> all = userService.findWithPermission( page, size,name);
-        int totalPages = all.getTotalPages();
-        long totalElements = all.getTotalElements();
-        List<UserDTO> content = all.getContent();
+        Page<UserDTO> all = userService.findWithPermission(page, size, List.of(name));
+        return getUsersResponse(all);
+    }
+
+    @GetMapping(path = "/additional_permission", params = {"page", "size", "name"})
+    public ResponseEntity getByAdditionalPermission(@RequestParam int page, @RequestParam int size, @RequestParam String name) {
+        Page<UserDTO> all = userService.findWithAssignedPermissions(page, size, List.of(name));
+        return getUsersResponse(all);
+    }
+
+    private ResponseEntity getUsersResponse(Page<UserDTO> userPage) {
+        int totalPages = userPage.getTotalPages();
+        long totalElements = userPage.getTotalElements();
+        List<UserDTO> content = userPage.getContent();
         Map<String, Object> totalPages1 =
-                Map.of("totalPages", totalPages,
-                        "totalElements", totalElements,
-                        "users", content);
+                Map.of(TOTAL_PAGES, totalPages,
+                        TOTAL_ELEMENTS, totalElements,
+                        USERS, content);
         return ResponseEntity.ok(totalPages1);
     }
 
