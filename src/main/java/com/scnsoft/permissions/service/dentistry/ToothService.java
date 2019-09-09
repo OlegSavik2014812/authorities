@@ -7,8 +7,6 @@ import com.scnsoft.permissions.persistence.repository.dentistry.ToothRepository;
 import com.scnsoft.permissions.service.BaseCrudService;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
-
 @Service
 public class ToothService extends BaseCrudService<Tooth, ToothDTO, Long> {
     private final ToothRepository toothRepository;
@@ -31,11 +29,8 @@ public class ToothService extends BaseCrudService<Tooth, ToothDTO, Long> {
     }
 
     public ToothDTO getTooth(Long toothNumber) {
-        if (Objects.isNull(toothNumber) || toothNumber < 0 || toothNumber > 32) {
-            throw new UnsupportedOperationException("Invalid tooth number. Unable to load tooth");
-        }
         return toothRepository.findById(toothNumber)
                 .map(toothConverter::toDTO)
-                .orElseThrow(() -> new UnsupportedOperationException("Unable to load tooth"));
+                .orElseThrow(() -> new UnsupportedOperationException("Invalid tooth number. Unable to load tooth"));
     }
 }

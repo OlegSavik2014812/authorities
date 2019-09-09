@@ -19,6 +19,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.function.UnaryOperator;
 
 @Service
@@ -43,7 +44,7 @@ public class PermissionService {
             );
             return user1;
         };
-        return executePermissionAction(userRepository, userId, userConverter, assignPermissionAction);
+        return executePermissionAction(userRepository, userId, assignPermissionAction, userConverter);
     }
 
     public UserDTO releasePermissionFromUser(Long userId, Long permissionId) {
@@ -52,17 +53,20 @@ public class PermissionService {
                     .removeIf(additionalPermission -> additionalPermission.getPermission().getId().equals(permissionId));
             return user1;
         };
-        return executePermissionAction(userRepository, userId, userConverter, releasePermissionAction);
+        return executePermissionAction(userRepository, userId, releasePermissionAction, userConverter);
     }
 
     public GroupDTO assignPermissionToGroup(Long groupId, Long permissionId) {
         UnaryOperator<Group> assignPermissionAction = group -> {
             Permission permission = permissionRepository.findById(permissionId)
                     .orElseThrow(() -> new NullPointerException("No such permission"));
-            group.getPermissions().add(permission);
+            List<Permission> permissions = group.getPermissions();
+            if (!permissions.contains(permission)) {
+                permissions.add(permission);
+            }
             return group;
         };
-        return executePermissionAction(groupRepository, groupId, groupConverter, assignPermissionAction);
+        return executePermissionAction(groupRepository, groupId, assignPermissionAction, groupConverter);
     }
 
     public GroupDTO releasePermissionFromGroup(Long groupId, Long permissionId) {
@@ -70,17 +74,17 @@ public class PermissionService {
             group.getPermissions().removeIf(permission1 -> permission1.getId().equals(permissionId));
             return group;
         };
-        return executePermissionAction(groupRepository, groupId, groupConverter, releasePermissionAction);
+        return executePermissionAction(groupRepository, groupId, releasePermissionAction, groupConverter);
     }
 
     private <T extends PersistenceEntity<Long>,
             K extends EntityDTO<Long>> K executePermissionAction(CrudRepository<T, Long> entityRepository, Long entityId,
-                                                                 EntityConverter<T, K> converter,
-                                                                 UnaryOperator<T> permissionAction) {
-        T entity = entityRepository.findById(entityId)
+                                                                 UnaryOperator<T> permissionAction,
+                                                                 EntityConverter<T, K> converter) {
+        return entityRepository.findById(entityId)
+                .map(permissionAction)
+                .map(entityRepository::save)
+                .map(converter::toDTO)
                 .orElseThrow(() -> new NullPointerException("No such entity"));
-        T assignedEntity = permissionAction.apply(entity);
-        T savedEntity = entityRepository.save(assignedEntity);
-        return converter.toDTO(savedEntity);
     }
 }

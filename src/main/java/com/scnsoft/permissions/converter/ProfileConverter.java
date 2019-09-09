@@ -25,14 +25,15 @@ public class ProfileConverter implements EntityConverter<Profile, ProfileDTO> {
 
     @Override
     public Profile toPersistence(ProfileDTO entityDTO) {
-        Profile profile = new Profile();
-        profile.setEmail(entityDTO.getEmail());
-        profile.setFirstName(entityDTO.getFirstName());
-        profile.setLastName(entityDTO.getLastName());
-        profile.setPhoneNumber(entityDTO.getPhoneNumber());
-        User user = userRepository.findById(entityDTO.getId()).orElseThrow(RuntimeException::new);
-        profile.setUser(user);
-        profile.setId(user.getId());
-        return profile;
+        Long id = entityDTO.getId();
+        User user = userRepository.findById(id).orElseThrow(RuntimeException::new);
+        return Profile.builder()
+                .email(entityDTO.getEmail())
+                .firstName(entityDTO.getFirstName())
+                .lastName(entityDTO.getLastName())
+                .phoneNumber(entityDTO.getPhoneNumber())
+                .user(user)
+                .id(id)
+                .build();
     }
 }

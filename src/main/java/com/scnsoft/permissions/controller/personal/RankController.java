@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 public class RankController {
     private final RankService rankService;
 
-    @GetMapping(path = "vote", params = {"userId", "isLike"})
+    @GetMapping(path = "vote")
     public RankDTO vote(@RequestParam Long userId, @RequestParam boolean isLike) {
         return rankService.vote(userId, isLike);
     }

@@ -26,22 +26,22 @@ public class UserController {
         return userService.findById(id).orElseThrow(RuntimeException::new);
     }
 
-    @GetMapping(path = "/user/assign_group", params = {"userId", "groupId"})
-    public UserDTO assignGroup(@RequestParam Long userId, @RequestParam Long groupId) {
-        return userService.updateGroup(userId, groupId);
+    @GetMapping(path = "/assign_group")
+    public UserDTO assignGroup(@RequestParam Long id, @RequestParam Long groupId) {
+        return userService.updateGroup(id, groupId);
     }
 
-    @GetMapping(path = "/user/release_group", params = {"userId"})
-    public UserDTO releaseGroup(@RequestParam Long userId) {
-        return userService.updateGroup(userId, null);
+    @GetMapping(path = "/release_group")
+    public UserDTO releaseGroup(@RequestParam Long id) {
+        return userService.updateGroup(id, null);
     }
 
-    @GetMapping("user")
-    public UserDTO getByLogin(@RequestParam(value = "name") String login) {
+    @GetMapping(value = "user")
+    public UserDTO getByLogin(@RequestParam String login) {
         return userService.findByLogin(login).orElseThrow(RuntimeException::new);
     }
 
-    @GetMapping(params = {"page", "size"})
+    @GetMapping()
     public ResponseEntity getAll(@RequestParam int page, @RequestParam int size) {
         Page<UserDTO> all = userService.findAll(page, size);
         return getUsersResponse(all);
@@ -63,11 +63,8 @@ public class UserController {
         int totalPages = userPage.getTotalPages();
         long totalElements = userPage.getTotalElements();
         List<UserDTO> content = userPage.getContent();
-        Map<String, Object> totalPages1 =
-                Map.of(TOTAL_PAGES, totalPages,
-                        TOTAL_ELEMENTS, totalElements,
-                        USERS, content);
-        return ResponseEntity.ok(totalPages1);
+        Map<String, Object> responseMap = Map.of(TOTAL_PAGES, totalPages, TOTAL_ELEMENTS, totalElements, USERS, content);
+        return ResponseEntity.ok(responseMap);
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")

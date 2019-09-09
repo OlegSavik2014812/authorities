@@ -2,6 +2,8 @@ package com.scnsoft.permissions.persistence.entity.personal;
 
 import com.scnsoft.permissions.persistence.entity.PersistenceEntity;
 import com.scnsoft.permissions.persistence.entity.User;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,8 +13,10 @@ import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "profiles")
+@Builder
 public class Profile implements PersistenceEntity<Long> {
     @Id
     private Long id;

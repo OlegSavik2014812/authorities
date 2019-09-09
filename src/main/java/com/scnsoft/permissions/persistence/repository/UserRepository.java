@@ -19,7 +19,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long>, 
     boolean existsByLogin(@Param("login") String login);
 
     @Query("select user from User user where login in :logins")
-    List<User> findUsersByNames(@Param("logins") Iterable<String> loginList);
+    List<User> findUsersByNames(@Param("logins") List<String> loginList);
 
     @Override
     @NonNull

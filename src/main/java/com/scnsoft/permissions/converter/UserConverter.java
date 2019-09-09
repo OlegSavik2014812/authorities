@@ -9,6 +9,7 @@ import com.scnsoft.permissions.persistence.repository.permission.GroupRepository
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,8 +18,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static java.util.Collections.emptyMap;
-import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -30,34 +29,30 @@ public class UserConverter implements EntityConverter<User, UserDTO> {
 
     @Override
     public UserDTO toDTO(User entity) {
-        Group group = entity.getGroup();
-        String groupName = null;
-        List<Permission> groupPermissions = null;
-        List<AdditionalPermission> additionalPermissions = null;
-        if (nonNull(group)) {
-            groupName = group.getName();
-            groupPermissions = group.getPermissions();
-            additionalPermissions = entity.getAdditionalPermissions();
-        }
-        List<String> availableUserPermissions = merge(groupPermissions, additionalPermissions);
+        Optional<Group> entityGroup = Optional.ofNullable(entity.getGroup());
+        String groupName = entityGroup.map(Group::getName)
+                .orElse(null);
+
+        List<Permission> groupPermissions = entityGroup.map(Group::getPermissions)
+                .orElse(Collections.emptyList());
+
+        List<AdditionalPermission> additionalPermissions = Optional.ofNullable(entity.getAdditionalPermissions())
+                .orElse(Collections.emptyList());
+
         return UserDTO.builder()
                 .id(entity.getId())
-                .login(requireNonNull(entity.getLogin()))
-                .password(requireNonNull(entity.getPassword()))
+                .login(entity.getLogin())
+                .password(entity.getPassword())
                 .groupName(groupName)
-                .permissions(availableUserPermissions)
+                .permissions(merge(groupPermissions, additionalPermissions))
                 .build();
     }
 
     private List<String> merge(List<Permission> groupPermissions, List<AdditionalPermission> additionalPermissions) {
-        Stream<Permission> groupPermissionsStream = nonNull(groupPermissions) ?
-                groupPermissions.stream() : Stream.empty();
+        Map<Permission, Boolean> resolvedAdditionalPermissions = additionalPermissions.stream()
+                .collect(toMap(AdditionalPermission::getPermission, AdditionalPermission::isEnabled));
 
-        Map<Permission, Boolean> resolvedAdditionalPermissions = nonNull(additionalPermissions) ?
-                additionalPermissions.stream()
-                        .collect(toMap(AdditionalPermission::getPermission, AdditionalPermission::isEnabled)) : emptyMap();
-
-        return Stream.concat(groupPermissionsStream, resolvedAdditionalPermissions.keySet().stream())
+        return Stream.concat(groupPermissions.stream(), resolvedAdditionalPermissions.keySet().stream())
                 .filter(distinctBy(Permission::getName))
                 .filter(permission -> resolvedAdditionalPermissions.getOrDefault(permission, true))
                 .map(Permission::getName)

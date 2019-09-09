@@ -14,21 +14,22 @@ public class RankConverter implements EntityConverter<Rank, RankDTO> {
 
     @Override
     public RankDTO toDTO(Rank entity) {
-        RankDTO rankDTO = new RankDTO();
-        rankDTO.setId(entity.getId());
-        rankDTO.setNumberOfVotes(entity.getNumberOfVotes());
-        rankDTO.setStatistic(entity.getStatistic());
-        return rankDTO;
+        return RankDTO.builder()
+                .id(entity.getId())
+                .numberOfVotes(entity.getNumberOfVotes())
+                .statistic(entity.getStatistic())
+                .build();
     }
 
     @Override
     public Rank toPersistence(RankDTO entityDTO) {
-        Rank rank = new Rank();
-        rank.setId(entityDTO.getId());
-        rank.setNumberOfVotes(entityDTO.getNumberOfVotes());
-        rank.setStatistic(entityDTO.getStatistic());
-        User user = userRepository.findById(entityDTO.getId()).orElseThrow(RuntimeException::new);
-        rank.setUser(user);
-        return rank;
+        Long id = entityDTO.getId();
+        User user = userRepository.findById(id).orElseThrow(RuntimeException::new);
+        return Rank.builder()
+                .id(id)
+                .numberOfVotes(entityDTO.getNumberOfVotes())
+                .statistic(entityDTO.getStatistic())
+                .user(user)
+                .build();
     }
 }

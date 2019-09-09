@@ -39,12 +39,12 @@ public class UserToothController {
     }
 
     @GetMapping()
-    public UserToothDTO getUserTooth(@RequestParam(value = "id") Long id) {
+    public UserToothDTO getUserTooth(@RequestParam Long id) {
         return userToothService.findById(id).orElse(UserToothDTO.builder().build());
     }
 
     @PostMapping("/delete")
-    public void deleteById(@RequestParam(value = "id") Long id) {
+    public void deleteById(@RequestParam Long id) {
         userToothService.deleteById(id);
     }
 

@@ -15,23 +15,23 @@ import org.springframework.web.bind.annotation.*;
 public class PermissionController {
     private final PermissionService permissionService;
 
-    @GetMapping(path = "/user/assign", params = {"userId", "permId", "isEnabled"})
-    public UserDTO assignUserPermission(@RequestParam Long userId, @RequestParam Long permId, @RequestParam boolean isEnabled) {
-        return permissionService.assignPermissionToUser(userId, permId, isEnabled);
+    @GetMapping(path = "/user/assign")
+    public UserDTO assignUserPermission(@RequestParam Long id, @RequestParam Long permId, @RequestParam boolean enabled) {
+        return permissionService.assignPermissionToUser(id, permId, enabled);
     }
 
-    @GetMapping(path = "/user/release", params = {"userId", "permId", "isEnabled"})
-    public UserDTO releaseUserPermission(@RequestParam Long userId, @RequestParam Long permId) {
-        return permissionService.releasePermissionFromUser(userId, permId);
+    @GetMapping(path = "/user/release")
+    public UserDTO releaseUserPermission(@RequestParam Long id, @RequestParam Long permId) {
+        return permissionService.releasePermissionFromUser(id, permId);
     }
 
-    @GetMapping(path = "/group/assign", params = {"groupId", "permissionsId"})
-    public GroupDTO assignGroupPermission(@RequestParam Long groupId, @RequestParam Long permissionsId) {
-        return permissionService.assignPermissionToGroup(groupId, permissionsId);
+    @GetMapping(path = "/group/assign")
+    public GroupDTO assignGroupPermission(@RequestParam Long id, @RequestParam Long permId) {
+        return permissionService.assignPermissionToGroup(id, permId);
     }
 
-    @GetMapping(path = "/group/release", params = {"groupId", "permissionsId"})
-    public GroupDTO releaseGroupPermission(@RequestParam Long groupId, @RequestParam Long permissionsId) {
-        return permissionService.releasePermissionFromGroup(groupId, permissionsId);
+    @GetMapping(path = "/group/release")
+    public GroupDTO releaseGroupPermission(@RequestParam Long id, @RequestParam Long permId) {
+        return permissionService.releasePermissionFromGroup(id, permId);
     }
 }

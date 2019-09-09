@@ -53,7 +53,7 @@ public class JwtTokenProvider {
     }
 
     boolean validateToken(String token) {
-        if (!Strings.isBlank(token)) {
+        if (Strings.isBlank(token)) {
             return false;
         }
         try {

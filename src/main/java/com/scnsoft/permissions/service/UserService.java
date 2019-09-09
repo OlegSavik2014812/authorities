@@ -1,5 +1,6 @@
 package com.scnsoft.permissions.service;
 
+import com.scnsoft.permissions.converter.ConverterUtils;
 import com.scnsoft.permissions.converter.UserConverter;
 import com.scnsoft.permissions.dto.UserDTO;
 import com.scnsoft.permissions.persistence.entity.User;
@@ -76,16 +77,15 @@ public class UserService extends BaseCrudService<User, UserDTO, Long> {
     public Page<UserDTO> findWithAssignedPermissions(int page, int size, List<String> permissions) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Long> userIdsByAssignedPermissions = userRepository.findUserIdsByAssignedPermissions(permissions, pageable);
-        List<User> allById = userRepository.findAllById(userIdsByAssignedPermissions.getContent());
-
-        return new PageImpl<>(allById, pageable, userIdsByAssignedPermissions.getTotalElements())
+        List<User> users = ConverterUtils.batchTransform(userIdsByAssignedPermissions.getContent(), userRepository::findAllById);
+        return new PageImpl<>(users, pageable, userIdsByAssignedPermissions.getTotalElements())
                 .map(userConverter::toDTO);
     }
 
     public Page<UserDTO> findWithPermission(int page, int size, List<String> permissions) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Long> userIdsByPermissions = userRepository.findUserIdsByPermissions(permissions, pageable);
-        List<User> users = userRepository.findAllById(userIdsByPermissions.getContent());
+        List<User> users = ConverterUtils.batchTransform(userIdsByPermissions.getContent(), userRepository::findAllById);
         return new PageImpl<>(users, pageable, userIdsByPermissions.getTotalElements())
                 .map(userConverter::toDTO);
     }

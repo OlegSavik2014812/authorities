@@ -14,7 +14,9 @@ import static java.time.LocalDateTime.now;
 
 @Service
 public class ComplaintService extends DentalRequestService<Complaint, ComplaintDTO> {
-    public ComplaintService(ComplaintRepository complaintRepository, ComplaintConverter converter, UserToothRepository userToothRepository) {
+    public ComplaintService(ComplaintRepository complaintRepository,
+                            ComplaintConverter converter,
+                            UserToothRepository userToothRepository) {
         super(complaintRepository, converter, userToothRepository);
     }
 

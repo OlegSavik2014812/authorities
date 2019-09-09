@@ -1,11 +1,12 @@
 package com.scnsoft.permissions.dto.personal;
 
 import com.scnsoft.permissions.dto.EntityDTO;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class RankDTO implements EntityDTO<Long> {
     private Long id;
     private Long numberOfVotes;
