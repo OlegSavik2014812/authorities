@@ -7,15 +7,12 @@ import com.scnsoft.permissions.persistence.repository.dentistry.ToothRepository;
 import com.scnsoft.permissions.service.BaseCrudService;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class ToothService extends BaseCrudService<Tooth, ToothDTO, Long> {
-    private final ToothRepository toothRepository;
-    private final ToothConverter toothConverter;
-
     public ToothService(ToothRepository repository, ToothConverter converter) {
         super(repository, converter);
-        this.toothRepository = repository;
-        this.toothConverter = converter;
     }
 
     @Override
@@ -25,12 +22,19 @@ public class ToothService extends BaseCrudService<Tooth, ToothDTO, Long> {
 
     @Override
     public void deleteById(Long id) {
-        throw new UnsupportedOperationException("Unable to delete general tooth entity. Tooth entity is for UserTooth entity usage ");
+        throw new UnsupportedOperationException("Unable to delete tooth entity. Tooth entity is only for UserTooth entity usage ");
     }
 
-    public ToothDTO getTooth(Long toothNumber) {
-        return toothRepository.findById(toothNumber)
-                .map(toothConverter::toDTO)
-                .orElseThrow(() -> new UnsupportedOperationException("Invalid tooth number. Unable to load tooth"));
+    @Override
+    public Optional<ToothDTO> findById(Long id) {
+        if (id < 1L || id > 32L) {
+            throw new UnsupportedOperationException("Invalid tooth number. Unable to load tooth");
+        }
+        return super.findById(id);
+    }
+
+    @Override
+    public long count() {
+        return 32L;
     }
 }

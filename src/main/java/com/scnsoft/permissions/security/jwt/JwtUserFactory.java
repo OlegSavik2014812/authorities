@@ -14,7 +14,6 @@ public class JwtUserFactory {
                 .id(userDTO.getId())
                 .username(userDTO.getLogin())
                 .password(userDTO.getPassword())
-                .isEnabled(true)
                 .authorities(toAuthorities(userDTO.getPermissions()))
                 .build();
     }

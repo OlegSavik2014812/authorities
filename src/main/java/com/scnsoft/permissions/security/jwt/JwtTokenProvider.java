@@ -1,7 +1,6 @@
 package com.scnsoft.permissions.security.jwt;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.logging.log4j.util.Strings;
@@ -29,7 +28,7 @@ public class JwtTokenProvider {
     }
 
     @PostConstruct
-    protected void init() {
+    private void init() {
         secret = Base64.getEncoder().encodeToString(secret.getBytes());
     }
 
@@ -59,7 +58,7 @@ public class JwtTokenProvider {
         try {
             Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
             return true;
-        } catch (JwtException | IllegalArgumentException e) {
+        } catch (Exception e) {
             return false;
         }
     }

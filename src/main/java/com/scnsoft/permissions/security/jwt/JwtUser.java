@@ -1,19 +1,18 @@
 package com.scnsoft.permissions.security.jwt;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
-@Data
+@Getter
 @Builder
 public class JwtUser implements UserDetails {
     private Long id;
     private String username;
     private String password;
-    private boolean isEnabled;
     private Collection<? extends GrantedAuthority> authorities;
 
     @Override
@@ -28,6 +27,11 @@ public class JwtUser implements UserDetails {
 
     @Override
     public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
         return true;
     }
 }

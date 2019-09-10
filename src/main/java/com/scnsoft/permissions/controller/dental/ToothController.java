@@ -18,7 +18,8 @@ public class ToothController {
     @GetMapping("{id}")
     @Cacheable(cacheNames = "tooth")
     public ToothDTO getTooth(@PathVariable("id") Long id) {
-        return toothService.getTooth(id);
+        return toothService.findById(id)
+                .orElseThrow(() -> new UnsupportedOperationException("Invalid tooth number. Unable to load tooth"));
     }
 
     @GetMapping
