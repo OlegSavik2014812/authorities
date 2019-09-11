@@ -2,6 +2,7 @@ package com.scnsoft.permissions.controller;
 
 import com.scnsoft.permissions.dto.UserDTO;
 import com.scnsoft.permissions.service.permission.AuthenticationService;
+import com.scnsoft.permissions.util.PayloadPerformanceTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -16,6 +17,7 @@ import javax.validation.constraints.NotNull;
 public class AuthController {
     private final AuthenticationService authenticationService;
 
+    @PayloadPerformanceTime(iterations = 100)
     @PostMapping("signIn")
     public ResponseEntity signIn(@Validated @NotNull @RequestBody UserDTO user) {
         return ResponseEntity.ok(authenticationService.signIn(user));

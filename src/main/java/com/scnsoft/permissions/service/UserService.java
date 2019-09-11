@@ -8,6 +8,8 @@ import com.scnsoft.permissions.persistence.entity.permission.Group;
 import com.scnsoft.permissions.persistence.repository.UserRepository;
 import com.scnsoft.permissions.persistence.repository.permission.GroupRepository;
 import org.apache.logging.log4j.util.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +22,7 @@ import java.util.Optional;
 
 @Service
 public class UserService extends BaseCrudService<User, UserDTO, Long> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
     private final UserConverter userConverter;

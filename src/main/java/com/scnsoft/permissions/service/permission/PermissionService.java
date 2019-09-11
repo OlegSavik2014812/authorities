@@ -32,34 +32,39 @@ public class PermissionService {
     private final GroupConverter groupConverter;
 
     public UserDTO assignPermissionToUser(Long userId, Long permissionId, boolean isEnabled) {
-        UnaryOperator<User> assignPermissionAction = user1 -> {
-            Permission permission = permissionRepository.findById(permissionId).orElseThrow(() -> new NullPointerException("No such entity"));
-            user1.getAdditionalPermissions().add(
+        UnaryOperator<User> assignPermissionAction = user -> {
+            Permission permission = permissionRepository.findById(permissionId)
+                    .orElseThrow(() -> new NullPointerException("No such entity"));
+            List<AdditionalPermission> additionalPermissions = user.getAdditionalPermissions();
+            boolean contains = additionalPermissions.stream()
+                    .anyMatch(additionalPermission -> (additionalPermission.getPermission().equals(permission)) && (additionalPermission.isEnabled() == isEnabled));
+            if (contains) {
+                return user;
+            }
+            additionalPermissions.add(
                     AdditionalPermission.builder()
                             .id(new CompositePermissionId(userId, permissionId))
-                            .user(user1)
+                            .user(user)
                             .permission(permission)
                             .isEnabled(isEnabled)
                             .build()
             );
-            return user1;
+            return user;
         };
         return executePermissionAction(userRepository, userId, assignPermissionAction, userConverter);
     }
 
     public UserDTO releasePermissionFromUser(Long userId, Long permissionId) {
-        UnaryOperator<User> releasePermissionAction = user1 -> {
-            user1.getAdditionalPermissions()
-                    .removeIf(additionalPermission -> additionalPermission.getPermission().getId().equals(permissionId));
-            return user1;
+        UnaryOperator<User> releasePermissionAction = user -> {
+            user.getAdditionalPermissions().removeIf(additionalPermission -> additionalPermission.getPermission().getId().equals(permissionId));
+            return user;
         };
         return executePermissionAction(userRepository, userId, releasePermissionAction, userConverter);
     }
 
     public GroupDTO assignPermissionToGroup(Long groupId, Long permissionId) {
         UnaryOperator<Group> assignPermissionAction = group -> {
-            Permission permission = permissionRepository.findById(permissionId)
-                    .orElseThrow(() -> new NullPointerException("No such permission"));
+            Permission permission = permissionRepository.findById(permissionId).orElseThrow(() -> new NullPointerException("No such permission"));
             List<Permission> permissions = group.getPermissions();
             if (!permissions.contains(permission)) {
                 permissions.add(permission);
@@ -71,7 +76,7 @@ public class PermissionService {
 
     public GroupDTO releasePermissionFromGroup(Long groupId, Long permissionId) {
         UnaryOperator<Group> releasePermissionAction = group -> {
-            group.getPermissions().removeIf(permission1 -> permission1.getId().equals(permissionId));
+            group.getPermissions().removeIf(permission -> permission.getId().equals(permissionId));
             return group;
         };
         return executePermissionAction(groupRepository, groupId, releasePermissionAction, groupConverter);

@@ -13,9 +13,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
@@ -29,39 +26,29 @@ public class UserConverter implements EntityConverter<User, UserDTO> {
 
     @Override
     public UserDTO toDTO(User entity) {
-        Optional<Group> entityGroup = Optional.ofNullable(entity.getGroup());
-        String groupName = entityGroup.map(Group::getName)
-                .orElse(null);
+        Optional<Group> optionalGroup = Optional.ofNullable(entity.getGroup());
+        String groupName = optionalGroup.map(Group::getName).orElse(null);
 
-        List<Permission> groupPermissions = entityGroup.map(Group::getPermissions)
-                .orElse(Collections.emptyList());
-
-        List<AdditionalPermission> additionalPermissions = Optional.ofNullable(entity.getAdditionalPermissions())
-                .orElse(Collections.emptyList());
+        List<Permission> groupPermissions = optionalGroup.map(Group::getPermissions).orElse(Collections.emptyList());
+        List<AdditionalPermission> additionalPermissions = Optional.ofNullable(entity.getAdditionalPermissions()).orElse(Collections.emptyList());
+        List<String> permissions = merge(groupPermissions, additionalPermissions);
 
         return UserDTO.builder()
                 .id(entity.getId())
                 .login(entity.getLogin())
                 .password(entity.getPassword())
                 .groupName(groupName)
-                .permissions(merge(groupPermissions, additionalPermissions))
+                .permissions(permissions)
                 .build();
     }
 
     private List<String> merge(List<Permission> groupPermissions, List<AdditionalPermission> additionalPermissions) {
-        Map<Permission, Boolean> resolvedAdditionalPermissions = additionalPermissions.stream()
-                .collect(toMap(AdditionalPermission::getPermission, AdditionalPermission::isEnabled));
-
-        return Stream.concat(groupPermissions.stream(), resolvedAdditionalPermissions.keySet().stream())
-                .filter(distinctBy(Permission::getName))
+        Map<String, Boolean> resolvedAdditionalPermissions = additionalPermissions.stream()
+                .collect(toMap(additionalPermission -> additionalPermission.getPermission().getName(), AdditionalPermission::isEnabled));
+        return Stream.concat(resolvedAdditionalPermissions.keySet().stream(), groupPermissions.stream().map(Permission::getName))
+                .distinct()
                 .filter(permission -> resolvedAdditionalPermissions.getOrDefault(permission, true))
-                .map(Permission::getName)
                 .collect(toList());
-    }
-
-    private Predicate<Permission> distinctBy(Function<Permission, ?> valueExtractor) {
-        Map<Object, Boolean> seen = new ConcurrentHashMap<>();
-        return permission -> seen.putIfAbsent(valueExtractor.apply(permission), Boolean.TRUE) == null;
     }
 
     @Override

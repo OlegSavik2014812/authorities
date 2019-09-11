@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class PerformanceLogger {
     private static final Logger LOGGER = LoggerFactory.getLogger(PerformanceLogger.class);
 
-    @Around("@annotation(ExecutionTime)|| execution(* com.scnsoft.permissions.controller..*(..))")
+    @Around("@annotation(ExecutionTime)")
     public Object logPerformance(ProceedingJoinPoint point) throws Throwable {
         Object object;
         String signature = point.getSignature().toShortString();
